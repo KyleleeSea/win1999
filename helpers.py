@@ -37,6 +37,23 @@ def isLegal(maze, newRow, newCol, protectedCells, openCellsSet):
     return False
 
 
+def mazeRecurser(maze, protectedCells, openCellsList, openCellsSet):
+    moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+    random.shuffle(moves)
+    random.shuffle(openCellsList)
+    for openCell in openCellsList:
+        for move in moves:
+            (currRow, currCol) = openCell
+            (adjRow, adjCol) = move
+            (newRow, newCol) = (currRow+adjRow, currCol+adjCol)
+            # Check legality
+            if isLegal(maze, newRow, newCol, protectedCells, 
+                    openCellsSet):
+                maze[newRow][newCol] = 0
+                openCellsSet.add((newRow, newCol))
+                openCellsList.append((newRow, newCol))
+                return
+
 # https://www.cs.cmu.edu/~112/notes/notes-recursion-part2.html#Backtracking 
 # nQueens ^. Also recitation Nov 9th
 def mazeBacktracker(maze, protectedCells, openCellsList, openCellsSet):
@@ -50,6 +67,7 @@ def mazeBacktracker(maze, protectedCells, openCellsList, openCellsSet):
         print('-----')
 
         random.shuffle(openCellsList)
+        print(openCellsList)
         moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
         random.shuffle(moves)
         # Loop through "moves" (both all cells and all move states)
@@ -74,5 +92,6 @@ def mazeBacktracker(maze, protectedCells, openCellsList, openCellsSet):
                 maze[newRow][newCol] = 1
                 if (newRow, newCol) in openCellsSet: 
                     openCellsList.remove((newRow, newCol))
-                    openCellsSet.remove((newRow, newCol))              
+                    openCellsSet.remove((newRow, newCol))  
+        return None            
 
