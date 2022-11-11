@@ -24,40 +24,40 @@ def mazeIsFinished(maze, openCellsList, proportion):
         return False
     else:
         totalCells = len(maze)**2
+        print(len(openCellsList))
+        print(totalCells*proportion)
         if len(openCellsList) >= totalCells*proportion:
             return True
         return False
 
-def isLegal(maze, newRow, newCol, protectedCells, openCellsSet):
+def isLegal(maze, newRow, newCol, protectedCells):
     (rows, cols) = (len(maze), len(maze[0]))
     if newRow < rows and newRow >= 0 and newCol < cols and newCol >= 0:
         if (newRow, newCol) not in protectedCells:
-            if (newRow, newCol) not in openCellsSet:
+            if maze[newRow][newCol] == 1:
                 return True
     return False
 
-
-def mazeRecurser(maze, protectedCells, openCellsList, openCellsSet):
+def changeMazeTile(maze, protectedCells, openCellsList):
     moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
     random.shuffle(moves)
-    random.shuffle(openCellsList)
     for openCell in openCellsList:
         for move in moves:
             (currRow, currCol) = openCell
             (adjRow, adjCol) = move
             (newRow, newCol) = (currRow+adjRow, currCol+adjCol)
-            # Check legality
-            if isLegal(maze, newRow, newCol, protectedCells, 
-                    openCellsSet):
+            if isLegal(maze, newRow, newCol, protectedCells):
                 maze[newRow][newCol] = 0
-                openCellsSet.add((newRow, newCol))
-                openCellsList.append((newRow, newCol))
+# https://www.programiz.com/python-programming/methods/list/insert
+                random.shuffle(openCellsList)
+                openCellsList.insert(0, (newRow, newCol))
                 return
+
 
 # https://www.cs.cmu.edu/~112/notes/notes-recursion-part2.html#Backtracking 
 # nQueens ^. Also recitation Nov 9th
 def mazeBacktracker(maze, protectedCells, openCellsList, openCellsSet):
-    if mazeIsFinished(maze, openCellsList, 0.7):
+    if mazeIsFinished(maze, openCellsList, 0.3):
         return maze
     else:
         # https://www.w3schools.com/python/ref_random_shuffle.asp
@@ -67,7 +67,6 @@ def mazeBacktracker(maze, protectedCells, openCellsList, openCellsSet):
         print('-----')
 
         random.shuffle(openCellsList)
-        print(openCellsList)
         moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
         random.shuffle(moves)
         # Loop through "moves" (both all cells and all move states)
@@ -89,9 +88,8 @@ def mazeBacktracker(maze, protectedCells, openCellsList, openCellsSet):
                 # https://www.programiz.com/python-programming/methods
                 # /list/remove
                 #https://www.programiz.com/python-programming/methods/set/remove
-                maze[newRow][newCol] = 1
                 if (newRow, newCol) in openCellsSet: 
+                    maze[newRow][newCol] = 1
                     openCellsList.remove((newRow, newCol))
-                    openCellsSet.remove((newRow, newCol))  
-        return None            
-
+                    openCellsSet.remove((newRow, newCol))
+        return None
