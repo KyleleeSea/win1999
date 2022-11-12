@@ -11,6 +11,7 @@ def appStarted(app):
     app.player = Player(app, app.maze)
 
 def timerFired(app):
+    # app.player.timerFired(app)
     pass
 
 def keyPressed(app, event):
