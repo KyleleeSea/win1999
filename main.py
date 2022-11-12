@@ -11,7 +11,6 @@ def appStarted(app):
     app.player = Player(app, app.maze)
 
 def timerFired(app):
-    # app.player.timerFired(app)
     pass
 
 def keyPressed(app, event):
@@ -22,4 +21,4 @@ def redrawAll(app, canvas):
     app.exitBlock.redraw(app, canvas)
     app.player.redraw(app, canvas)
 
-runApp(width=1920, height=1080)
+runApp(width=1500, height=600)
