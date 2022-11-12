@@ -17,4 +17,4 @@ class Maze:
         return mazeBacktracker(maze2D, protectedCells, openCellsList)
         
 maze = Maze(10)
-maze.generateMaze(20)
+maze.generateMaze(15)

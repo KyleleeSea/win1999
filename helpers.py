@@ -30,12 +30,22 @@ def mazeIsFinished(maze, openCellsList, finishCondition):
             return True
         return False
 
+def notMiddle(maze, newRow, newCol):
+    (rows, cols) = (len(maze), len(maze[0]))
+    if ((newRow+1) > rows or (newRow-1) < 0 or maze[newRow+1][newCol] == 1 or
+    maze[newRow-1][newCol] == 1):
+        if ((newCol+1) > cols or (newCol-1) < 0 or maze[newRow][newCol+1] == 1 
+        or maze[newRow][newCol-1] == 1):
+            return True
+    return False
+
 def isLegal(maze, newRow, newCol, protectedCells):
     (rows, cols) = (len(maze), len(maze[0]))
     if newRow < rows and newRow >= 0 and newCol < cols and newCol >= 0:
         if (newRow, newCol) not in protectedCells:
             if maze[newRow][newCol] == 1:
-                return True
+                if notMiddle(maze, newRow, newCol):
+                    return True
     return False
 
 # https://www.cs.cmu.edu/~112/notes/notes-recursion-part2.html#Backtracking 
