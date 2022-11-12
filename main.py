@@ -5,9 +5,11 @@ from player import *
 
 def appStarted(app):
     app.margin = min(app.width, app.height)//15
-    app.maze = Maze(20)
+    app.maze = Maze(15)
+    app.level = 1
     exitBlockProportion = 0.6
     app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion)
+    app.maze.addExit(app.exitBlock)
     app.player = Player(app, app.maze)
 
 def timerFired(app):

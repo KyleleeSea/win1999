@@ -6,6 +6,10 @@ class Maze:
     def __init__(self, size):
         self.size = size
         self.maze = self.generateMaze(size)
+        self.exitBlock = None
+
+    def addExit(self, exitBlock):
+        self.exitBlock = exitBlock
 
     def generateMaze(self, size):
         maze2D = generate2DList(size)
