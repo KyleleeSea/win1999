@@ -3,18 +3,15 @@ from helpers import *
 import random
 
 class Maze:
-    def __init__(self, size, exitBlock):
+    def __init__(self, size):
         self.size = size
-        self.exitBlock = exitBlock
-        self.maze = self.generateMaze(size, exitBlock)
+        self.maze = self.generateMaze(size)
 
     def generateMaze(self, size):
         maze2D = generate2DList(size)
         protectedCells = getProtectedCells(maze2D)
-        # Break starting wall and initialize open cells set
+        # Break starting wall and initialize variables
         maze2D[1][1] = 0
-        # Creating both a list and a set so we can shuffle through the list
-        # But search through the set
         openCellsList = [(1,1)]
 
         return mazeBacktracker(maze2D, protectedCells, openCellsList)
@@ -52,8 +49,6 @@ def mazeIsFinished(maze, openCellsList, finishCondition):
         return False
     else:
         totalCells = len(maze)**2
-        print(len(openCellsList))
-        print(totalCells*finishCondition)
         if len(openCellsList) >= totalCells*finishCondition:
             return True
         return False
@@ -85,27 +80,20 @@ def mazeBacktracker(maze, protectedCells, openCellsList):
     else:
         # https://www.w3schools.com/python/ref_random_shuffle.asp
         # Set up Moves
-        for row in maze:
-            print(row)
-        print('-----')
 
         moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
         random.shuffle(moves)
         # Loop through "moves" (both all cells and all move states)
         for openCell in openCellsList:
             for move in moves:
-                print(openCellsList)
                 (currRow, currCol) = openCell
                 (adjRow, adjCol) = move
                 (newRow, newCol) = (currRow+adjRow, currCol+adjCol)
-                # print(f'currRow: {currRow}, currCol: {currCol}')
-                # print(f'adjRow: {adjRow}, adjCol: {adjCol}')
-                # print(f'newRow: {newRow}, newCol: {newCol}')
                 # Check legality
                 if isLegal(maze, newRow, newCol, protectedCells):
                     maze[newRow][newCol] = 0
                     # openCellsList.insert(0, (newRow, newCol))
-                    # random.shuffle(openCellsList)
+                    random.shuffle(openCellsList)
                     openCellsList.insert(0, (newRow, newCol))
                     newMaze = mazeBacktracker(maze, protectedCells, 
                     openCellsList)
@@ -122,16 +110,6 @@ def mazeBacktracker(maze, protectedCells, openCellsList):
 
 #----------------------
 # Maze drawing helpers
-def getCellBounds(row, col, maze, app):
-    width = app.width - 2*app.margin
-    height = app.height - 2*app.margin
-    (numRows, numCols) = (len(maze), len(maze[0]))
-    cellWidth = width//numRows
-    cellHeight = height//numCols
-    (x0, y0, x1, y1) = (col*cellWidth, row*cellHeight, (col+1)*cellWidth,
-    (row+1)*cellHeight)
-    return (x0, y0, x1, y1)
-
 def drawWall(app, canvas, row, col, maze):
     (x0, y0, x1, y1) = getCellBounds(row, col, maze, app)
     canvas.create_rectangle(x0, y0, x1, y1, fill='black')
