@@ -15,6 +15,9 @@ def appStarted(app):
 def timerFired(app):
     pass
 
+def mouseMoved(app, event):
+    app.player.mouseMoved(app, event)
+
 def keyPressed(app, event):
     app.player.keyPressed(app, event)
 

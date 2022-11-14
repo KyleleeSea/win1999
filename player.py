@@ -6,10 +6,12 @@ import math
 class Player:
     def __init__(self, app, maze):
         # Consider restructuring self.maze and self.exitBlock assignment
+        self.lastMousePos = None
+        self.mouseSensitivityDenominator = int(min(app.width, app.height)//400)
         self.maze = maze.maze
         self.exitBlock = maze.exitBlock
         self.angle = 90
-        self.angleVel = 10
+        # self.angleVel = 10
         self.moveVel = int(min(app.width, app.height)//100)
         (startX0, startY0, startX1, startY1) = getCellBounds(1, 1, self.maze, 
         app)
@@ -18,15 +20,8 @@ class Player:
         # playerSize temporary
         self.playerSize = int(min(app.width, app.height)//(len(maze.maze)*4))
 
-    def adjustAngle(self, direction):
-        if direction == 'clockwise':
-            self.angle = (self.angle + self.angleVel) % 360
-        
-        elif direction == 'counterclockwise' and self.angle >= 5:
-            self.angle = (self.angle - self.angleVel)
-        
-        elif direction == 'counterclockwise' and self.angle <= 0:
-            self.angle = 360 - self.angleVel
+    def adjustAngle(self, angleDiff):
+        self.angle = (self.angle - angleDiff) % 360
 
     def movePlayer(self, app):
         # https://www.youtube.com/watch?v=rbokZWrwCJE
@@ -45,12 +40,16 @@ class Player:
                 nextLevel(app)
 
     def keyPressed(self, app, event):
-        if event.key == 'd':
-            self.adjustAngle('clockwise')
-        if event.key == 'a':
-            self.adjustAngle('counterclockwise')
         if event.key == 'w':
             self.movePlayer(app)
+
+    def mouseMoved(self, app, event):
+        if self.lastMousePos == None:
+            self.lastMousePos = event.x
+        else:
+            diff = event.x - self.lastMousePos
+            self.lastMousePos = event.x
+            self.adjustAngle(diff//self.mouseSensitivityDenominator)
 
     def checkLegalMove(self, newX, newY, app):
         (row, col) = getCell(app, newX, newY, self.maze)
