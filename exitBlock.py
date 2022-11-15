@@ -3,10 +3,14 @@ from helpers import *
 import random
 
 class exitBlock:
-    def __init__(self, maze, proportion):
+    def __init__(self, maze, proportion, app):
         self.maze = maze
         self.proportion = proportion
         (self.row, self.col) = createExitCoords(self.maze, self.proportion)
+
+        (x0, y0, x1, y1) = getCellBounds(self.row, self.col, self.maze, app)
+        self.xPos = (x1 + x0)//2
+        self.yPos = (y1 + y0)//2
     
     def redraw(self, app, canvas):
         (x0, y0, x1, y1) = getCellBounds(self.row, self.col, self.maze, app)

@@ -1,6 +1,7 @@
 from cmu_112_graphics import *
 from helpers import *
 from backgroundLogic import *
+from backgroundSound import *
 import math
 
 class Player:
@@ -35,6 +36,7 @@ class Player:
         if self.checkLegalMove(newX, newY, app):
             self.xPos = newX
             self.yPos = newY
+            adjustBackgroundVolume(app)
             if self.checkExit(self.xPos, self.yPos, self.exitBlock, app):
                 #nextLevel from backgroundLogic.py
                 nextLevel(app)

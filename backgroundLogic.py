@@ -3,6 +3,7 @@ from maze import *
 from player import *
 from exitBlock import *
 from helpers import *
+import pygame
 
 def nextLevel(app):
     app.level += 1
@@ -10,7 +11,7 @@ def nextLevel(app):
     app.maze = Maze(15)
     #Reset exit block
     exitBlockProportion = 0.6
-    app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion)
+    app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)
     app.maze.addExit(app.exitBlock)
 
     #Reset player 
