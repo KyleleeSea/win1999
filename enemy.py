@@ -25,7 +25,7 @@ class Enemy:
         self.visited = set()
         self.movingBack = []
         # Adjust constantSpeed. Currently 10% faster than player
-        self.constantSpeed = int(min(app.width, app.height)//200) 
+        self.constantSpeed = int(min(app.width, app.height)//70) 
         # enemySize probably not needed after sprite animated
         self.enemySize = int(min(app.width, app.height)//(len(self.maze.maze)*4))
 
@@ -57,8 +57,7 @@ class Enemy:
             # Check if return necessary later
             return
         else:
-            moves = [(1,0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1),
-            (-1, -1)]
+            moves = [(1,0), (-1, 0), (0, 1), (0, -1)]
             # Optimally move to open, non visited cell
             for move in moves:
                 newRow = self.row + move[0]
@@ -95,7 +94,6 @@ class Enemy:
                         self.xVel = self.constantSpeed*move[1]
                         self.yVel = self.constantSpeed*move[0]
                         self.visited.add((newRow, newCol))
-                        self.movingBack.append((newRow, newCol))
 
                     #         print(f'xVel: {self.xVel}')
                     # print(f'yVel: {self.yVel}')
