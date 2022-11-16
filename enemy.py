@@ -27,6 +27,7 @@ class Enemy:
         # Bug testing variables
         self.goalRow = 1
         self.goalCol = 1
+        self.visited = set()
 
         # Start pathing logic
         self.wander()
@@ -60,6 +61,7 @@ class Enemy:
                 if self.isLegalMove(newRow, newCol):
                     self.row = newRow
                     self.col = newCol
+                    self.visited.add((self.row, self.col))
 
                     solution = self.wander()
                     if solution != None:
@@ -69,7 +71,7 @@ class Enemy:
             return None
         
     def isLegalMove(self, row, col):
-        if self.maze.maze[row][col] == 0:
+        if self.maze.maze[row][col] == 0 and (row, col) not in self.visited:
             return True
         return False
     
