@@ -8,6 +8,7 @@
 
 import random 
 from helpers import *
+from backgroundLogic import *
 
 class Enemy:
     def __init__(self, app, maze):
@@ -16,13 +17,19 @@ class Enemy:
         # May have to change lastRow and lastCol if we end up starting the
         # player in a random location. Current logic: Player starts at 1,1
         # so there's no way the enemy has already visited 1,1 at the start 
-        self.lastRow = 1
-        self.lastCol = 1
         self.xVel = 0
         self.yVel = 0
-        self.state = 'wandering'
+        # Adjust constantSpeed. Currently 10% faster than player
+        self.constantSpeed = int(min(app.width, app.height)//90) 
         # enemySize probably not needed after sprite animated
         self.enemySize = int(min(app.width, app.height)//(len(self.maze.maze)*4))
+
+        # Bug testing variables
+        self.goalRow = 1
+        self.goalCol = 1
+
+        # Start pathing logic
+        self.wander()
 
 # Controller 
     def spawn(self, app):
@@ -38,28 +45,49 @@ class Enemy:
                 yPos = (bounds[1] + bounds[3])//2
                 return (xPos, yPos, row, col)
 
-    def timerFired(self, app):
-        # Only update state if in new row or new col
-        if self.row != self.lastRow or self.col != self.lastCol:
-            self.changeState()
-        # Always move
-        self.move()
-        self.lastRow = self.row
-        self.lastCol = self.col
-        (self.row, self.col) = getCell(app, self.xPos, self.yPos, self.maze.maze)
-
-    def changeState(self):
-        if self.state == 'rushing':
-            self.rush()
-        elif self.state == 'hunting':
+# Controller move functions
+    def wander(self):
+        if self.row == self.goalRow and self.col == self.goalCol:
             self.hunt()
-        elif self.state == 'wandering':
-            self.wander()
+            # Check if return necessary later
+            return
+        else:
+            moves = [(1,0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1),
+            (-1, -1)]
+            for move in moves:
+                newRow = self.row + move[0]
+                newCol = self.col + move[1]
+                if self.isLegalMove(newRow, newCol):
+                    self.row = newRow
+                    self.col = newCol
+
+                    solution = self.wander()
+                    if solution != None:
+                        return solution
+                    self.row -= move[0]
+                    self.col -= move[1]
+            return None
+        
+    def isLegalMove(self, row, col):
+        if self.maze.maze[row][col] == 0:
+            return True
+        return False
+    
+    def hunt(self):
+        print('now hunting!')
+    
+
+    def timerFired(self, app):
+        self.move()
+        self.updateRowCol(app)
 
     def move(self):
         # Might need to add a legality check here 
         self.xPos += self.xVel
         self.yPos += self.yVel
+
+    def updateRowCol(self, app):
+        self.row, self.col = getCell(app, self.xPos, self.yPos, self.maze.maze)
     
         
 
