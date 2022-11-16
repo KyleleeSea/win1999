@@ -17,20 +17,21 @@ class Enemy:
         # May have to change lastRow and lastCol if we end up starting the
         # player in a random location. Current logic: Player starts at 1,1
         # so there's no way the enemy has already visited 1,1 at the start 
+        self.lastRow = 1
+        self.lastCol = 1
         self.xVel = 0
         self.yVel = 0
+        self.state = 'wandering'
+        self.visited = set()
+        self.movingBack = []
         # Adjust constantSpeed. Currently 10% faster than player
-        self.constantSpeed = int(min(app.width, app.height)//90) 
+        self.constantSpeed = int(min(app.width, app.height)//200) 
         # enemySize probably not needed after sprite animated
         self.enemySize = int(min(app.width, app.height)//(len(self.maze.maze)*4))
 
         # Bug testing variables
         self.goalRow = 1
         self.goalCol = 1
-        self.visited = set()
-
-        # Start pathing logic
-        self.wander()
 
 # Controller 
     def spawn(self, app):
@@ -48,44 +49,87 @@ class Enemy:
 
 # Controller move functions
     def wander(self):
+        print(f'visited:{self.visited}')
+        print(f'movingBack: {self.movingBack}')
+        print(f'row: {self.row}, col: {self.col}')
         if self.row == self.goalRow and self.col == self.goalCol:
-            self.hunt()
+            self.state = 'hunting'
             # Check if return necessary later
             return
         else:
             moves = [(1,0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1),
             (-1, -1)]
-            random.shuffle(moves)
+            # Optimally move to open, non visited cell
             for move in moves:
                 newRow = self.row + move[0]
                 newCol = self.col + move[1]
-                if self.isLegalMove(newRow, newCol):
-                    print(f'xVel: {self.xVel}')
-                    print(f'yVel: {self.yVel}')
-                    print(f'row: {self.row}')
-                    print(f'col: {self.col}')
+                if self.notVisitedAndInBounds(newRow, newCol):
                     self.xVel = self.constantSpeed*move[1]
                     self.yVel = self.constantSpeed*move[0]
                     self.visited.add((newRow, newCol))
+                    self.movingBack.append((newRow, newCol))
+                    # returning so u don't get to next part
+                    return
+            # If reached end of path, trying moving back one
+            # Remove latest so enemy doesn't stay stationary
+            # Check if at least two
+            if len(self.movingBack) >= 2:
+                print('now moving back')
+                self.movingBack.pop()
+                # Move back to last cell 
+                lastCell = self.movingBack[-1]
+                moveY = lastCell[0] - self.row
+                moveX = lastCell[1] - self.col
+                self.xVel = self.constantSpeed*moveX
+                self.yVel = self.constantSpeed*moveY
+                # Remove so player keeps backtracking
+                self.movingBack.pop()
+            # Worst case scenario, go random cell
+            else:
+                random.shuffle(moves)
+                print('doing a random')
+                for move in moves:
+                    newRow = self.row + move[0]
+                    newCol = self.col + move[1]
+                    if self.isInBounds(newRow, newCol):
+                        self.xVel = self.constantSpeed*move[1]
+                        self.yVel = self.constantSpeed*move[0]
+                        self.visited.add((newRow, newCol))
+                        self.movingBack.append((newRow, newCol))
 
-                    solution = self.wander()
-                    if solution != None:
-                        return solution
-                    self.xVel = -(self.constantSpeed*move[1])
-                    self.yVel = -(self.constantSpeed*move[0])
-            return None
-        
-    def isLegalMove(self, row, col):
-        if self.maze.maze[row][col] == 0 and (row, col) not in self.visited:
+                    #         print(f'xVel: {self.xVel}')
+                    # print(f'yVel: {self.yVel}')
+                    # print(f'row: {self.row}')
+                    # print(f'col: {self.col}')
+
+    def isInBounds(self, row, col):
+        if self.maze.maze[row][col] == 0:
             return True
         return False
     
-    def hunt(self):
-        print('now hunting!')
+    def notVisitedAndInBounds(self, row, col):
+        if self.isInBounds(row, col) and (row, col) not in self.visited:
+            return True
+        return False
     
+    def changeState(self):
+        if self.state == 'wandering':
+            self.wander()
+        elif self.state == 'hunting':
+            self.hunt()
+
+    
+    def hunt(self):
+        print('placeholder')
 
     def timerFired(self, app):
+        # Only update state if in new row or new col
+        if self.row != self.lastRow or self.col != self.lastCol:
+            self.changeState()
+        # Always move
         self.move()
+        self.lastRow = self.row
+        self.lastCol = self.col
         self.updateRowCol(app)
 
     def move(self):
