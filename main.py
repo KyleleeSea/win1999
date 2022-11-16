@@ -23,7 +23,7 @@ def appStarted(app):
     app.backgroundSound = backgroundSound('./assets/backgroundAudio.mp3')    
 
 def timerFired(app):
-    pass
+    app.enemy.timerFired(app)
 
 def mouseMoved(app, event):
     app.player.mouseMoved(app, event)

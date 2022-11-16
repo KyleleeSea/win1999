@@ -55,19 +55,24 @@ class Enemy:
         else:
             moves = [(1,0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1),
             (-1, -1)]
+            random.shuffle(moves)
             for move in moves:
                 newRow = self.row + move[0]
                 newCol = self.col + move[1]
                 if self.isLegalMove(newRow, newCol):
-                    self.row = newRow
-                    self.col = newCol
-                    self.visited.add((self.row, self.col))
+                    print(f'xVel: {self.xVel}')
+                    print(f'yVel: {self.yVel}')
+                    print(f'row: {self.row}')
+                    print(f'col: {self.col}')
+                    self.xVel = self.constantSpeed*move[1]
+                    self.yVel = self.constantSpeed*move[0]
+                    self.visited.add((newRow, newCol))
 
                     solution = self.wander()
                     if solution != None:
                         return solution
-                    self.row -= move[0]
-                    self.col -= move[1]
+                    self.xVel = -(self.constantSpeed*move[1])
+                    self.yVel = -(self.constantSpeed*move[0])
             return None
         
     def isLegalMove(self, row, col):
