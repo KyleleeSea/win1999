@@ -13,11 +13,15 @@ class Player:
         self.exitBlock = maze.exitBlock
         self.angle = 90
         # self.angleVel = 10
-        self.moveVel = int(min(app.width, app.height)//100)
+        self.moveVel = int(min(app.width, app.height)//100) 
+        #Make player slower by increasing denominator of moveVel for actual
+        # game. Maybe 150?
         (startX0, startY0, startX1, startY1) = getCellBounds(1, 1, self.maze, 
         app)
         self.xPos = int((startX0 + startX1)//2)
         self.yPos = int((startY0 + startY1)//2)
+        self.row = 1
+        self.col = 1
         # playerSize temporary
         self.playerSize = int(min(app.width, app.height)//(len(maze.maze)*4))
 
@@ -33,11 +37,12 @@ class Player:
 
         newX = self.xPos + self.moveVel * math.sin(math.radians(self.angle))
         newY = self.yPos + self.moveVel * math.cos(math.radians(self.angle))
-        if self.checkLegalMove(newX, newY, app):
+        if checkLegalMove(newX, newY, self.maze, app):
             self.xPos = newX
             self.yPos = newY
+            self.row, self.col = getCell(app, newX, newY, self.maze)
             adjustBackgroundVolume(app)
-            if self.checkExit(self.xPos, self.yPos, self.exitBlock, app):
+            if self.checkExit(self.exitBlock):
                 #nextLevel from backgroundLogic.py
                 nextLevel(app)
 
@@ -53,15 +58,8 @@ class Player:
             self.lastMousePos = event.x
             self.adjustAngle(diff//self.mouseSensitivityDenominator)
 
-    def checkLegalMove(self, newX, newY, app):
-        (row, col) = getCell(app, newX, newY, self.maze)
-        if self.maze[row][col] == 0:
-            return True
-        return False
-
-    def checkExit(self, x, y, exitBlock, app):
-        (row, col) = getCell(app, x, y, self.maze)
-        if exitBlock.row == row and exitBlock.col == col:
+    def checkExit(self, exitBlock):
+        if exitBlock.row == self.row and exitBlock.col == self.col:
             return True
         return False
 

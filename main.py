@@ -3,9 +3,11 @@ from maze import *
 from exitBlock import *
 from player import *
 from backgroundSound import *
+from enemy import *
 
 
 def appStarted(app):
+    app.timerDelay = 200
     app.margin = min(app.width, app.height)//15
     app.maze = Maze(15)
     app.level = 1
@@ -13,6 +15,7 @@ def appStarted(app):
     app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)
     app.maze.addExit(app.exitBlock)
     app.player = Player(app, app.maze)
+    app.enemy = Enemy(app, app.maze)
 
     #Init audio
     pygame.mixer.init()
@@ -32,6 +35,7 @@ def redrawAll(app, canvas):
     app.maze.redraw(app, canvas)
     app.exitBlock.redraw(app, canvas)
     app.player.redraw(app, canvas)
+    app.enemy.redraw(app, canvas)
 
 def appStopped(app):
     app.backgroundSound.appStopped(app)

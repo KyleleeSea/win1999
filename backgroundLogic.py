@@ -3,6 +3,7 @@ from maze import *
 from player import *
 from exitBlock import *
 from helpers import *
+from enemy import *
 import pygame
 
 def nextLevel(app):
@@ -21,3 +22,12 @@ def nextLevel(app):
     app.player.yPos = int((startY0 + startY1)//2)
     app.player.maze = app.maze.maze
     app.player.exitBlock = app.exitBlock
+
+    #Reset enemy
+    app.enemy = Enemy(app, app.maze)
+
+def checkLegalMove(newX, newY, maze, app):
+    (row, col) = getCell(app, newX, newY, maze)
+    if maze[row][col] == 0:
+        return True
+    return False
