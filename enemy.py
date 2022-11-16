@@ -82,7 +82,6 @@ class Enemy:
                 self.xVel = self.constantSpeed*moveX
                 self.yVel = self.constantSpeed*moveY
                 # Remove so player keeps backtracking
-                self.movingBack.pop()
             # Worst case scenario, go random cell
             else:
                 random.shuffle(moves)
