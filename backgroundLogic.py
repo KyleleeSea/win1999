@@ -4,6 +4,7 @@ from player import *
 from exitBlock import *
 from helpers import *
 from enemy import *
+from playerShadow import *
 import pygame
 
 def nextLevel(app):
@@ -22,6 +23,7 @@ def nextLevel(app):
     app.player.yPos = int((startY0 + startY1)//2)
     app.player.maze = app.maze.maze
     app.player.exitBlock = app.exitBlock
+    app.playerShadow = PlayerShadow(app)
 
     #Reset enemy
     app.enemy = Enemy(app, app.maze)

@@ -22,6 +22,8 @@ class Player:
         self.yPos = int((startY0 + startY1)//2)
         self.row = 1
         self.col = 1
+        self.lastRow = 0
+        self.lastCol = 0
         # playerSize temporary
         self.playerSize = int(min(app.width, app.height)//(len(maze.maze)*4))
 
@@ -45,6 +47,19 @@ class Player:
             if self.checkExit(self.exitBlock):
                 #nextLevel from backgroundLogic.py
                 nextLevel(app)
+
+        # Row col updating for shadow logic
+        if self.row != self.lastRow or self.col != self.lastCol:
+            # Account for starter value
+            if self.lastRow != 0 and self.lastCol != 0:
+                app.playerShadow.addToVisited((self.lastRow, self.lastCol))
+        self.lastRow = self.row
+        self.lastCol = self.col
+        self.updateRowCol(app)
+
+    def updateRowCol(self, app):
+        self.row, self.col = getCell(app, self.xPos, self.yPos, self.maze)
+    
 
     def keyPressed(self, app, event):
         if event.key == 'w':

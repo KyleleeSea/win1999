@@ -48,11 +48,13 @@ class Enemy:
                 return (xPos, yPos, row, col)
 
 # Controller move functions
-    def wander(self):
-        print(f'visited:{self.visited}')
-        print(f'movingBack: {self.movingBack}')
-        print(f'row: {self.row}, col: {self.col}')
-        if self.row == self.goalRow and self.col == self.goalCol:
+# Actions
+    def wander(self, app):
+        # print(f'visited:{self.visited}')
+        # print(f'movingBack: {self.movingBack}')
+        # print(f'row: {self.row}, col: {self.col}')
+        if (self.row, self.col) in app.playerShadow.shadow:
+            print('hunting triggered')
             self.state = 'hunting'
             # Check if return necessary later
             return
@@ -73,31 +75,38 @@ class Enemy:
             # Remove latest so enemy doesn't stay stationary
             # Check if at least two
             if len(self.movingBack) >= 2:
-                print('now moving back')
+                # print('now moving back')
                 self.movingBack.pop()
                 # Move back to last cell 
                 lastCell = self.movingBack[-1]
                 moveY = lastCell[0] - self.row
                 moveX = lastCell[1] - self.col
-                self.xVel = self.constantSpeed*moveX
-                self.yVel = self.constantSpeed*moveY
+                self.changeVel(moveX, moveY)
                 # Remove so player keeps backtracking
             # Worst case scenario, go random cell
             else:
                 random.shuffle(moves)
-                print('doing a random')
+                # print('doing a random')
                 for move in moves:
                     newRow = self.row + move[0]
                     newCol = self.col + move[1]
                     if self.isInBounds(newRow, newCol):
-                        self.xVel = self.constantSpeed*move[1]
-                        self.yVel = self.constantSpeed*move[0]
+                        self.changeVel(move[1], move[0])
                         self.visited.add((newRow, newCol))
 
                     #         print(f'xVel: {self.xVel}')
                     # print(f'yVel: {self.yVel}')
                     # print(f'row: {self.row}')
                     # print(f'col: {self.col}')
+
+    def hunt(self, app):
+        print('now hunting')
+
+
+# Action Helpers
+    def changeVel(self, xChange, yChange):
+        self.xVel = self.constantSpeed*xChange
+        self.yVel = self.constantSpeed*yChange
 
     def isInBounds(self, row, col):
         if self.maze.maze[row][col] == 0:
@@ -108,26 +117,6 @@ class Enemy:
         if self.isInBounds(row, col) and (row, col) not in self.visited:
             return True
         return False
-    
-    def changeState(self):
-        if self.state == 'wandering':
-            self.wander()
-        elif self.state == 'hunting':
-            self.hunt()
-
-    
-    def hunt(self):
-        print('placeholder')
-
-    def timerFired(self, app):
-        # Only update state if in new row or new col
-        if self.row != self.lastRow or self.col != self.lastCol:
-            self.changeState()
-        # Always move
-        self.move()
-        self.lastRow = self.row
-        self.lastCol = self.col
-        self.updateRowCol(app)
 
     def move(self):
         # Might need to add a legality check here 
@@ -137,7 +126,24 @@ class Enemy:
     def updateRowCol(self, app):
         self.row, self.col = getCell(app, self.xPos, self.yPos, self.maze.maze)
     
-        
+    def rushCondition(self):
+        pass
+# Action logic
+    def timerFired(self, app):
+        # Only update state if in new row or new col
+        if self.row != self.lastRow or self.col != self.lastCol:
+            self.changeState(app)
+        # Always move
+        self.move()
+        self.lastRow = self.row
+        self.lastCol = self.col
+        self.updateRowCol(app)
+
+    def changeState(self, app):
+        if self.state == 'wandering':
+            self.wander(app)
+        elif self.state == 'hunting':
+            self.hunt(app)
 
 # View
     def redraw(self, app, canvas):

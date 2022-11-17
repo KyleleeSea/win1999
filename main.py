@@ -4,7 +4,7 @@ from exitBlock import *
 from player import *
 from backgroundSound import *
 from enemy import *
-
+from playerShadow import *
 
 def appStarted(app):
     app.timerDelay = 200
@@ -16,6 +16,7 @@ def appStarted(app):
     app.maze.addExit(app.exitBlock)
     app.player = Player(app, app.maze)
     app.enemy = Enemy(app, app.maze)
+    app.playerShadow = PlayerShadow(app)
 
     #Init audio
     pygame.mixer.init()
@@ -24,6 +25,7 @@ def appStarted(app):
 
 def timerFired(app):
     app.enemy.timerFired(app)
+    app.playerShadow.timerFired(app)
 
 def mouseMoved(app, event):
     app.player.mouseMoved(app, event)
