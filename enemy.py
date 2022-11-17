@@ -50,12 +50,15 @@ class Enemy:
 # Controller move functions
 # Actions
     def wander(self, app):
+        print('now wandering')
         # print(f'visited:{self.visited}')
         # print(f'movingBack: {self.movingBack}')
         # print(f'row: {self.row}, col: {self.col}')
         if (self.row, self.col) in app.playerShadow.shadow:
             print('hunting triggered')
             self.state = 'hunting'
+            self.visited = set()
+            self.movingBack = []
             # Check if return necessary later
             return
         else:
@@ -101,7 +104,36 @@ class Enemy:
 
     def hunt(self, app):
         print('now hunting')
+        
+        # Check shadow exists 
+        if len(app.playerShadow.shadow) == 0:
+            self.state = 'wandering'
+            return
+        else:
+            # Find place of current cell in shadow
+            print(f'row, col: {self.row}, {self.col}')
+            print(f'playerShadow: {app.playerShadow.shadow}')
+            if (self.row, self.col) not in app.playerShadow.shadow:
+                print('row and col not found')
+                # Reseting shadow here may cause bugs. Come back.
+                app.playerShadow.shadow = []
+                self.state = 'wandering'
+                return
 
+            currShadowIndex = app.playerShadow.shadow.index((self.row, self.col))
+
+            if len(app.playerShadow.shadow) <= currShadowIndex+1:
+                print('doesnt have a following cell')
+                # Reseting shadow here may cause bugs. Come back.
+                app.playerShadow.shadow = []
+                self.state = 'wandering'
+                return
+            # Move to the next cell in player shadow
+            moveTo = app.playerShadow.shadow[currShadowIndex+1]
+            moveY = moveTo[0] - self.row
+            moveX = moveTo[1] - self.col
+            app.playerShadow.shadow = app.playerShadow.shadow[currShadowIndex:]
+            self.changeVel(moveX, moveY)
 
 # Action Helpers
     def changeVel(self, xChange, yChange):
