@@ -9,7 +9,7 @@ from playerShadow import *
 def appStarted(app):
     app.timerDelay = 200
     app.margin = min(app.width, app.height)//15
-    app.maze = Maze(15)
+    app.maze = Maze(10)
     app.level = 1
     exitBlockProportion = 0.6
     app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)

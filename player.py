@@ -8,7 +8,7 @@ class Player:
     def __init__(self, app, maze):
         # Consider restructuring self.maze and self.exitBlock assignment
         self.lastMousePos = None
-        self.mouseSensitivityDenominator = int(min(app.width, app.height)//400)
+        self.mouseSensitivityDenominator = int(min(app.width, app.height)//600)
         self.maze = maze.maze
         self.exitBlock = maze.exitBlock
         self.angle = 90

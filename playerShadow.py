@@ -5,7 +5,7 @@ class PlayerShadow:
 
         # Timer logic
         # only change secondsToWait
-        secondsToWaitAdd = 2
+        secondsToWaitAdd = 1
         msToWaitAdd = secondsToWaitAdd*1000
         self.AddIntervalsToWait = msToWaitAdd//app.timerDelay
         self.currentIntervalAdd = 0
@@ -33,8 +33,7 @@ class PlayerShadow:
         if self.currentIntervalRemove >= self.RemoveIntervalsToWait:
             self.currentIntervalRemove = 0
 
-            if len(self.shadow) >= 3:
+            if len(self.shadow) >= 1:
                 # print(self.allVisited)
                 # print(self.shadow)
-                for i in range(3):
-                    self.shadow.pop(0)
+                self.shadow.pop(0)

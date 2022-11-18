@@ -24,8 +24,9 @@ class Enemy:
         self.state = 'wandering'
         self.visited = set()
         self.movingBack = []
-        # Adjust constantSpeed. Currently 10% faster than player
-        self.constantSpeed = int(min(app.width, app.height)//70) 
+        # Adjust constantSpeed. Currently 20% faster than player
+        self.wanderSpeed = (app.player.moveVel)*1.2
+        self.huntSpeed = (app.player.moveVel)*2
         # enemySize probably not needed after sprite animated
         self.enemySize = int(min(app.width, app.height)//(len(self.maze.maze)*4))
 
@@ -50,26 +51,29 @@ class Enemy:
 # Controller move functions
 # Actions
     def wander(self, app):
-        print('now wandering')
         # print(f'visited:{self.visited}')
         # print(f'movingBack: {self.movingBack}')
         # print(f'row: {self.row}, col: {self.col}')
-        if (self.row, self.col) in app.playerShadow.shadow:
-            print('hunting triggered')
-            self.state = 'hunting'
-            self.visited = set()
-            self.movingBack = []
+        huntTuple = self.huntingRangeCheck(app)
+        if huntTuple != None:
+            print('smelled player')
+            self.changeVelHunt(huntTuple[1], huntTuple[0])
+            self.state = 'startHunting'
+
+            # self.startHunt(huntTuple, app)
             # Check if return necessary later
-            return
         else:
+            print('now wandering')
+
             moves = [(1,0), (-1, 0), (0, 1), (0, -1)]
             # Optimally move to open, non visited cell
             for move in moves:
                 newRow = self.row + move[0]
                 newCol = self.col + move[1]
                 if self.notVisitedAndInBounds(newRow, newCol):
-                    self.xVel = self.constantSpeed*move[1]
-                    self.yVel = self.constantSpeed*move[0]
+                    self.changeVelWander(move[1], move[0])
+                    # self.xVel = self.constantSpeed*move[1]
+                    # self.yVel = self.constantSpeed*move[0]
                     self.visited.add((newRow, newCol))
                     self.movingBack.append((newRow, newCol))
                     # returning so u don't get to next part
@@ -84,7 +88,7 @@ class Enemy:
                 lastCell = self.movingBack[-1]
                 moveY = lastCell[0] - self.row
                 moveX = lastCell[1] - self.col
-                self.changeVel(moveX, moveY)
+                self.changeVelWander(moveX, moveY)
                 # Remove so player keeps backtracking
             # Worst case scenario, go random cell
             else:
@@ -101,6 +105,14 @@ class Enemy:
                     # print(f'yVel: {self.yVel}')
                     # print(f'row: {self.row}')
                     # print(f'col: {self.col}')
+
+    def startHunt(self, app):
+        print('hit start hunt func')
+        if (self.row, self.col) in app.playerShadow.shadow:
+            print('beginning hunt')
+            self.state = 'hunting'
+            self.visited = set()
+            self.movingBack = []
 
     def hunt(self, app):
         print('now hunting')
@@ -133,12 +145,23 @@ class Enemy:
             moveY = moveTo[0] - self.row
             moveX = moveTo[1] - self.col
             app.playerShadow.shadow = app.playerShadow.shadow[currShadowIndex:]
-            self.changeVel(moveX, moveY)
+            self.changeVelHunt(moveX, moveY)
 
 # Action Helpers
-    def changeVel(self, xChange, yChange):
-        self.xVel = self.constantSpeed*xChange
-        self.yVel = self.constantSpeed*yChange
+    def huntingRangeCheck(self, app):
+        moves = [(0,1), (0, -1), (1,0), (-1, 0)]
+        for move in moves:
+            if (self.row + move[0], self.col + move[1]) in app.playerShadow.shadow:
+                return move
+        return None
+
+    def changeVelWander(self, xChange, yChange):
+        self.xVel = self.wanderSpeed*xChange
+        self.yVel = self.wanderSpeed*yChange
+
+    def changeVelHunt(self, xChange, yChange):
+        self.xVel = self.huntSpeed*xChange
+        self.yVel = self.huntSpeed*yChange
 
     def isInBounds(self, row, col):
         if self.maze.maze[row][col] == 0:
@@ -174,6 +197,8 @@ class Enemy:
     def changeState(self, app):
         if self.state == 'wandering':
             self.wander(app)
+        elif self.state == 'startHunting':
+            self.startHunt(app)
         elif self.state == 'hunting':
             self.hunt(app)
 

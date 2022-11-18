@@ -120,4 +120,9 @@ def drawWall(app, canvas, row, col, maze):
 
 def drawOpen(app, canvas, row, col, maze):
     (x0, y0, x1, y1) = getCellBounds(row, col, maze, app)
-    canvas.create_rectangle(x0, y0, x1, y1, fill='white', outline='black')
+
+    # Debugging code
+    if (row, col) in app.playerShadow.shadow:
+        canvas.create_rectangle(x0, y0, x1, y1, fill='yellow', outline='black')
+    else:
+        canvas.create_rectangle(x0, y0, x1, y1, fill='white', outline='black')
