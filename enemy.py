@@ -56,18 +56,18 @@ class Enemy:
 # Actions
     def wander(self, app):
         if self.checkStraightLine(app):
-            print('found')
+            # print('found')
             self.visited = set()
             self.movingBack = []
             self.state = 'following'
 
         huntTuple = self.huntingRangeCheck(app)
         if huntTuple != None:
-            print('smelled player')
+            # print('smelled player')
             self.changeVelHunt(huntTuple[1], huntTuple[0])
             self.state = 'startHunting'
         else:
-            print('now wandering')
+            # print('now wandering')
 
             moves = [(1,0), (-1, 0), (0, 1), (0, -1)]
             # Optimally move to open, non visited cell
@@ -109,7 +109,7 @@ class Enemy:
 
     def hunt(self, app):
         if self.checkStraightLine(app):
-            print('found')
+            # print('found')
             self.state = 'following'
         # Check shadow exists 
         if len(app.playerShadow.shadow) == 0:
@@ -117,10 +117,10 @@ class Enemy:
             return
         else:
             # Find place of current cell in shadow
-            print(f'row, col: {self.row}, {self.col}')
-            print(f'playerShadow: {app.playerShadow.shadow}')
+            # print(f'row, col: {self.row}, {self.col}')
+            # print(f'playerShadow: {app.playerShadow.shadow}')
             if (self.row, self.col) not in app.playerShadow.shadow:
-                print('row and col not found')
+                # print('row and col not found')
                 # Reseting shadow here may cause bugs. Come back.
                 app.playerShadow.shadow = []
                 self.state = 'wandering'
@@ -129,7 +129,7 @@ class Enemy:
             currShadowIndex = app.playerShadow.shadow.index((self.row, self.col))
 
             if len(app.playerShadow.shadow) <= currShadowIndex+1:
-                print('doesnt have a following cell')
+                # print('doesnt have a following cell')
                 # Reseting shadow here may cause bugs. Come back.
                 app.playerShadow.shadow = []
                 self.state = 'wandering'
@@ -143,7 +143,7 @@ class Enemy:
 
     def follow(self, app):
         if self.currentInterval >= self.followIntervals:
-            print('time up')
+            # print('time up')
             self.currentInterval = 0
             self.state = 'wandering'
 
@@ -228,7 +228,7 @@ class Enemy:
         self.updateRowCol(app)
 
         if self.state == 'following':
-            print(self.currentInterval, self.followIntervals)
+            # print(self.currentInterval, self.followIntervals)
             self.currentInterval += 1
 
     def changeState(self, app):
