@@ -28,8 +28,15 @@ def nextLevel(app):
     #Reset enemy
     app.enemy = Enemy(app, app.maze)
 
-def checkLegalMove(newX, newY, maze, app):
+def checkLegalMove(lastCol,lastRow, newX, newY, maze, app):
     (row, col) = getCell(app, newX, newY, maze)
-    if maze[row][col] == 0:
+    # Checking diagonals
+    if maze[lastRow][lastCol + 1] == 1 and maze[row][col-1] == 1:
+        print('triggered top')
+        return False
+    elif maze[lastRow][lastCol-1] == 1 and maze[row][col+1] == 1:
+        print('triggered bot')
+        return False
+    elif maze[row][col] == 0:
         return True
     return False

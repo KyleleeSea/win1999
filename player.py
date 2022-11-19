@@ -39,7 +39,7 @@ class Player:
 
         newX = self.xPos + self.moveVel * math.sin(math.radians(self.angle))
         newY = self.yPos + self.moveVel * math.cos(math.radians(self.angle))
-        if checkLegalMove(newX, newY, self.maze, app):
+        if checkLegalMove(self.lastCol, self.lastRow, newX, newY, self.maze, app):
             self.xPos = newX
             self.yPos = newY
             self.row, self.col = getCell(app, newX, newY, self.maze)
