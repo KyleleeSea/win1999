@@ -24,15 +24,19 @@ class Enemy:
         self.state = 'wandering'
         self.visited = set()
         self.movingBack = []
-        # Adjust constantSpeed. Currently 20% faster than player
+        # Adjust speeds. 
         self.wanderSpeed = (app.player.moveVel)*1.2
         self.huntSpeed = (app.player.moveVel)*2
+        self.followSpeed = (app.player.moveVel)*0.95
         # enemySize probably not needed after sprite animated
         self.enemySize = int(min(app.width, app.height)//(len(self.maze.maze)*4))
 
-        # Bug testing variables
-        self.goalRow = 1
-        self.goalCol = 1
+        # Timer logic for follow
+        # only change secondsToWait
+        secondsToFollow = 30
+        msToFollow = secondsToFollow*1000
+        self.followIntervals = msToFollow//app.timerDelay
+        self.currentInterval = 0
 
 # Controller 
     def spawn(self, app):
@@ -51,17 +55,17 @@ class Enemy:
 # Controller move functions
 # Actions
     def wander(self, app):
-        # print(f'visited:{self.visited}')
-        # print(f'movingBack: {self.movingBack}')
-        # print(f'row: {self.row}, col: {self.col}')
+        if self.checkStraightLine(app):
+            print('found')
+            self.visited = set()
+            self.movingBack = []
+            self.state = 'following'
+
         huntTuple = self.huntingRangeCheck(app)
         if huntTuple != None:
             print('smelled player')
             self.changeVelHunt(huntTuple[1], huntTuple[0])
             self.state = 'startHunting'
-
-            # self.startHunt(huntTuple, app)
-            # Check if return necessary later
         else:
             print('now wandering')
 
@@ -72,8 +76,6 @@ class Enemy:
                 newCol = self.col + move[1]
                 if self.notVisitedAndInBounds(newRow, newCol):
                     self.changeVelWander(move[1], move[0])
-                    # self.xVel = self.constantSpeed*move[1]
-                    # self.yVel = self.constantSpeed*move[0]
                     self.visited.add((newRow, newCol))
                     self.movingBack.append((newRow, newCol))
                     # returning so u don't get to next part
@@ -82,7 +84,6 @@ class Enemy:
             # Remove latest so enemy doesn't stay stationary
             # Check if at least two
             if len(self.movingBack) >= 2:
-                # print('now moving back')
                 self.movingBack.pop()
                 # Move back to last cell 
                 lastCell = self.movingBack[-1]
@@ -93,7 +94,6 @@ class Enemy:
             # Worst case scenario, go random cell
             else:
                 random.shuffle(moves)
-                # print('doing a random')
                 for move in moves:
                     newRow = self.row + move[0]
                     newCol = self.col + move[1]
@@ -101,22 +101,16 @@ class Enemy:
                         self.changeVel(move[1], move[0])
                         self.visited.add((newRow, newCol))
 
-                    #         print(f'xVel: {self.xVel}')
-                    # print(f'yVel: {self.yVel}')
-                    # print(f'row: {self.row}')
-                    # print(f'col: {self.col}')
-
     def startHunt(self, app):
-        print('hit start hunt func')
         if (self.row, self.col) in app.playerShadow.shadow:
-            print('beginning hunt')
             self.state = 'hunting'
             self.visited = set()
             self.movingBack = []
 
     def hunt(self, app):
-        print('now hunting')
-        
+        if self.checkStraightLine(app):
+            print('found')
+            self.state = 'following'
         # Check shadow exists 
         if len(app.playerShadow.shadow) == 0:
             self.state = 'wandering'
@@ -147,7 +141,42 @@ class Enemy:
             app.playerShadow.shadow = app.playerShadow.shadow[currShadowIndex:]
             self.changeVelHunt(moveX, moveY)
 
+    def follow(self, app):
+        if self.currentInterval >= self.followIntervals:
+            print('time up')
+            self.currentInterval = 0
+            self.state = 'wandering'
+
+        bestDir = (0, 0)
+        bestDist = 1000
+        directions = [(0,1), (0, -1), (1,0), (-1, 0)]
+        for direction in directions:
+            newRow = self.row + direction[0]
+            newCol = self.col + direction[1]
+            if self.isInBounds(newRow, newCol):
+                dist = getDistance(app.player.row, app.player.col, newRow, newCol)
+                if dist < bestDist:
+                    bestDist = dist
+                    bestDir = direction
+        self.changeVelFollow(bestDir[1], bestDir[0])
+
 # Action Helpers
+    def checkStraightLine(self, app):
+        # Note: Currently not checking diagonals
+        directions = [(0,1), (0, -1), (1,0), (-1, 0)]
+        for direction in directions:
+            yAdj, xAdj = direction
+            cell1 = (self.row + yAdj, self.col + xAdj)
+            cell2 = (self.row + yAdj*2, self.col + xAdj*2)
+            # Check cells are open
+            if (self.maze.maze[cell1[0]][cell1[1]] == 0 and 
+            self.maze.maze[cell2[0]][cell2[1]] == 0):
+                # Check player at open cell 
+                if ((app.player.row, app.player.col) == cell1 or 
+                (app.player.row, app.player.col) == cell2):
+                    return True
+        return False
+
     def huntingRangeCheck(self, app):
         moves = [(0,1), (0, -1), (1,0), (-1, 0)]
         for move in moves:
@@ -162,6 +191,10 @@ class Enemy:
     def changeVelHunt(self, xChange, yChange):
         self.xVel = self.huntSpeed*xChange
         self.yVel = self.huntSpeed*yChange
+
+    def changeVelFollow(self, xChange, yChange):
+        self.xVel = self.followSpeed*xChange
+        self.yVel = self.followSpeed*yChange
 
     def isInBounds(self, row, col):
         if self.maze.maze[row][col] == 0:
@@ -194,6 +227,10 @@ class Enemy:
         self.lastCol = self.col
         self.updateRowCol(app)
 
+        if self.state == 'following':
+            print(self.currentInterval, self.followIntervals)
+            self.currentInterval += 1
+
     def changeState(self, app):
         if self.state == 'wandering':
             self.wander(app)
@@ -201,6 +238,8 @@ class Enemy:
             self.startHunt(app)
         elif self.state == 'hunting':
             self.hunt(app)
+        elif self.state == 'following':
+            self.follow(app)
 
 # View
     def redraw(self, app, canvas):
