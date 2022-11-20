@@ -31,12 +31,13 @@ def nextLevel(app):
 def checkLegalMove(lastCol,lastRow, newX, newY, maze, app):
     (row, col) = getCell(app, newX, newY, maze)
     # Checking diagonals
-    if maze[lastRow][lastCol + 1] == 1 and maze[row][col-1] == 1:
-        print('triggered top')
-        return False
-    elif maze[lastRow][lastCol-1] == 1 and maze[row][col+1] == 1:
-        print('triggered bot')
-        return False
-    elif maze[row][col] == 0:
+    # Only run check if moving diagonally, otherwise bugs.
+    if row-lastRow != 0 and col-lastCol!= 0:
+        if maze[lastRow][lastCol + 1] == 1 and maze[row][col-1] == 1:
+            return False
+        elif maze[lastRow][lastCol-1] == 1 and maze[row][col+1] == 1:
+            return False
+    # Check cell open
+    if maze[row][col] == 0:
         return True
     return False

@@ -144,6 +144,9 @@ def drawOpen(app, canvas, row, col, maze):
     (x0, y0, x1, y1) = getCellBounds(row, col, maze, app)
 
     # Debugging code
+    if row == app.player.lastRow and col == app.player.lastCol:
+        canvas.create_rectangle(x0, y0, x1, y1, fill='green', outline='black')
+
     if (row, col) in app.playerShadow.shadow:
         canvas.create_rectangle(x0, y0, x1, y1, fill='yellow', outline='black')
     else:

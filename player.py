@@ -22,8 +22,8 @@ class Player:
         self.yPos = int((startY0 + startY1)//2)
         self.row = 1
         self.col = 1
-        self.lastRow = 0
-        self.lastCol = 0
+        self.lastRow = 1
+        self.lastCol = 1
         # playerSize temporary
         self.playerSize = int(min(app.width, app.height)//(len(maze.maze)*4))
 
@@ -47,7 +47,7 @@ class Player:
             if self.checkExit(self.exitBlock):
                 #nextLevel from backgroundLogic.py
                 nextLevel(app)
-
+        # print(self.row, self.col)
         # Row col updating for shadow logic
         if self.row != self.lastRow or self.col != self.lastCol:
             # Account for starter value
