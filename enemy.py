@@ -316,7 +316,7 @@ class Enemy:
 
         (x0, y0, x1, y1) = (self.xPos - self.enemySize, self.yPos - self.enemySize,
         self.xPos + self.enemySize, self.yPos + self.enemySize)
-        canvas.create_oval(x0, y0, x1, y1, fill='purple')
+        canvas.create_oval(x0//4, y0//4, x1//4, y1//4, fill='purple')
         
         # first two args change position center
         # might have to rescale here... 
@@ -325,7 +325,7 @@ class Enemy:
         enemy3DSize = getSpriteDims(app)/baseWidthInPx
         if enemy3DSize > 30:
             enemy3DSize = 30
-        if enemy3DSize > 0.5:
+        if enemy3DSize > 0.5 and app.enemyIsVisible:
             image = app.scaleImage(animation, enemy3DSize)
             canvas.create_image(x, 
             y, image=ImageTk.PhotoImage(image))

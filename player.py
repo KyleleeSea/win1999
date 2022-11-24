@@ -25,7 +25,7 @@ class Player:
         self.lastRow = 1
         self.lastCol = 1
         # playerSize temporary
-        self.playerSize = int(min(app.width, app.height)//(len(maze.maze)*4))
+        self.playerSize = int(min(app.width, app.height)//(len(maze.maze)*6))
 
     def adjustAngle(self, angleDiff):
         self.angle = (self.angle - angleDiff) % 360
@@ -79,12 +79,11 @@ class Player:
         return False
 
     def redraw(self, app, canvas):
-        canvas.create_oval(self.xPos-self.playerSize, self.yPos-self.playerSize,
-        self.xPos + self.playerSize, self.yPos + self.playerSize,
+        canvas.create_oval((self.xPos-self.playerSize)//4, (self.yPos-self.playerSize)//4,
+        (self.xPos + self.playerSize)//4, (self.yPos + self.playerSize)//4,
         fill='orange')
-
         # Temporary 2D debugging line that'll show angle facing
-        canvas.create_line(self.xPos, self.yPos, 
-        self.xPos+(self.moveVel * math.sin(math.radians(self.angle)))*10,
-        self.yPos+self.moveVel * math.cos(math.radians(self.angle))*10, 
-        fill='orange')
+        canvas.create_line(self.xPos//4, self.yPos//4, 
+        (self.xPos+(self.moveVel * math.sin(math.radians(self.angle)))*10)//4,
+        (self.yPos+self.moveVel * math.cos(math.radians(self.angle))*10)//4, 
+        fill='red')

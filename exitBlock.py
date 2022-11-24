@@ -14,7 +14,7 @@ class exitBlock:
     
     def redraw(self, app, canvas):
         (x0, y0, x1, y1) = getCellBounds(self.row, self.col, self.maze, app)
-        canvas.create_oval(x0, y0, x1, y1, fill='green')
+        canvas.create_oval(x0//4, y0//4, x1//4, y1//4, fill='green')
 
 def createExitCoords(maze, proportion):
     (rows, cols) = (len(maze), len(maze[0]))

@@ -5,13 +5,14 @@ from player import *
 from backgroundSound import *
 from enemy import *
 from playerShadow import *
+from raycaster import *
 
 def appStarted(app):
     app.wallHeight = (1/6)*app.height
     app.distToPlane = (app.width/2)*math.tan(math.radians(30))
+    app.enemyIsVisible = True
 
     app.timerDelay = 200
-    app.margin = min(app.width, app.height)//15
     app.maze = Maze(10)
     app.level = 1
     exitBlockProportion = 0.6
@@ -26,6 +27,8 @@ def appStarted(app):
     # https://obsydianx.itch.io/horror-sfx-volume-1
     app.backgroundSound = backgroundSound('./assets/backgroundAudio.mp3')    
 
+    app.raycaster = Raycaster(app, app.maze)
+
 def timerFired(app):
     app.enemy.timerFired(app)
     app.playerShadow.timerFired(app)
@@ -37,6 +40,8 @@ def keyPressed(app, event):
     app.player.keyPressed(app, event)
 
 def redrawAll(app, canvas):
+    app.raycaster.redraw(app, canvas)
+
     app.maze.redraw(app, canvas)
     app.exitBlock.redraw(app, canvas)
     app.player.redraw(app, canvas)
