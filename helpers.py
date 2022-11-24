@@ -25,3 +25,13 @@ def getCell(app, x, y, maze):
 
 def getDistance(x0, y0, x1, y1):
     return ((x1-x0)**2 + (y1-y0)**2)**(1/2)
+
+# Spritesheet helpers
+# Programmed by me previously for Hack112
+# https://github.com/KyleleeSea/slashnbash/blob/main/helpers.py
+def cutSpritesheet(startX, adjW, w, startY, endY, spritesheet, app):
+    animation = spritesheet.crop((startX+adjW, startY, (w-startX)+adjW, endY))
+    return animation
+
+def getYs(row):
+    return (48.19*row, 48.19*(row+1))

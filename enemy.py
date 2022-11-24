@@ -9,6 +9,7 @@
 import random 
 from helpers import *
 from backgroundLogic import *
+from spriteCaster import *
 
 class Enemy:
     def __init__(self, app, maze):
@@ -38,6 +39,47 @@ class Enemy:
         self.followIntervals = msToFollow//app.timerDelay
         self.currentInterval = 0
 
+        # Implementation inspired by my previous work for Hack112
+        # https://github.com/KyleleeSea/slashnbash/blob/main/earth_enemy.py
+        # Load spritesheets
+        spritesheet = app.loadImage('./assets/bonziBuddy.png')
+        startX = 0
+        xWidth = 60.23
+        self.animationCounter = 0
+
+        self.wanderAnim = []
+        (startY, endY) = getYs(5)
+        for i in range(7):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.wanderAnim.append(animation)
+        for i in range(10,14):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.wanderAnim.append(animation)
+
+        self.huntAnim = []
+        (startY, endY) = getYs(14)
+        for i in range(8,17):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.huntAnim.append(animation)
+        (startY, endY) = getYs(15)
+        for i in range(8):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.huntAnim.append(animation)
+
+        self.followAnim = []
+        (startY, endY) = getYs(9)
+        for i in range(2,11):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.followAnim.append(animation)
+        for i in range(11,3,-1):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.followAnim.append(animation)
 # Controller 
     def spawn(self, app):
         while True:
@@ -217,7 +259,24 @@ class Enemy:
     def rushCondition(self):
         pass
 # Action logic
-    def timerFired(self, app):
+    def animationUpdates(self, app):
+        if self.state == 'wandering':
+            self.animationCounter += 1 
+
+            if self.animationCounter >= len(self.wanderAnim):
+                self.animationCounter = 0
+        elif self.state == 'hunting' or self.state == 'startHunting':
+            self.animationCounter += 1 
+
+            if self.animationCounter >= len(self.huntAnim):
+                self.animationCounter = 0
+        elif self.state == 'following':
+            self.animationCounter += 1 
+
+            if self.animationCounter >= len(self.followAnim):
+                self.animationCounter = 0
+
+    def movementUpdates(self, app):
         # Only update state if in new row or new col
         if self.row != self.lastRow or self.col != self.lastCol:
             self.changeState(app)
@@ -229,7 +288,12 @@ class Enemy:
 
         if self.state == 'following':
             # print(self.currentInterval, self.followIntervals)
-            self.currentInterval += 1
+            self.currentInterval += 1        
+        
+    def timerFired(self, app):
+        self.movementUpdates(app)
+        self.animationUpdates(app)
+
 
     def changeState(self, app):
         if self.state == 'wandering':
@@ -243,6 +307,19 @@ class Enemy:
 
 # View
     def redraw(self, app, canvas):
+        if self.state == 'wandering':
+            animation = self.wanderAnim[self.animationCounter]
+        elif self.state == 'hunting' or self.state == 'startHunting':
+            animation = self.huntAnim[self.animationCounter]
+        elif self.state == 'following':
+            animation = self.followAnim[self.animationCounter]
+
         (x0, y0, x1, y1) = (self.xPos - self.enemySize, self.yPos - self.enemySize,
         self.xPos + self.enemySize, self.yPos + self.enemySize)
         canvas.create_oval(x0, y0, x1, y1, fill='purple')
+        
+        # first two args change position center
+        # might have to rescale here... 
+        (x, y) = getSpriteCoords(app)
+        canvas.create_image(x, 
+        y, image=ImageTk.PhotoImage(animation))
