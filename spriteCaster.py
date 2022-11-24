@@ -1,4 +1,5 @@
 import math
+from helpers import *
 
 # https://wynnliam.github.io/raycaster/news/tutorial/2019/04/03/
 # raycaster-part-02.html
@@ -16,14 +17,22 @@ def getSpriteCoords(app):
     if p < 0:
         p += 360
 
-    q = app.player.angle + (fov/2) - p
-    # if (app.player.angle >= 90 and app.player.angle <= 180 and 
-    # p >= 0 and p <= 90):
-    #     q += 360
-    # if (app.player.angle >= 0 and app.player.angle <= 90 and
-    # p >= 90 and p <= 180):
-    #     q -= 360
+    q = app.player.angle-90 + (fov/2) - p
+    if (app.player.angle >= 0 and app.player.angle <= 90 and 
+    p >= 270 and p <= 360):
+        q += 360
+    if (app.player.angle >= 270 and app.player.angle <= 360 and
+    p >= 0 and p <= 90):
+        q -= 360
     
     returnX = q * (app.width / fov)
     returnY = app.height / 2
     return (returnX, returnY)
+
+def getSpriteDims(app):
+    dist = getDistance(app.player.xPos, app.player.yPos,
+    app.enemy.xPos, app.enemy.yPos)
+    widthToHeightAspectRatio = 60.23/48.19
+
+    scale = app.distToPlane * (app.wallHeight/dist)
+    return scale

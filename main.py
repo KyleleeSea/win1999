@@ -7,6 +7,9 @@ from enemy import *
 from playerShadow import *
 
 def appStarted(app):
+    app.wallHeight = (1/6)*app.height
+    app.distToPlane = (app.width/2)*math.tan(math.radians(30))
+
     app.timerDelay = 200
     app.margin = min(app.width, app.height)//15
     app.maze = Maze(10)
