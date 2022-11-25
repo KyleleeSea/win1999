@@ -7,6 +7,7 @@
 # triangle. stmao@andrew.cmu.edu
 from cmu_112_graphics import *
 from helpers import *
+from spriteCaster import *
 import math
 
 class Raycaster:
@@ -22,7 +23,10 @@ class Raycaster:
         self.skyAndGroundColor = rgbString(165, 169, 166)
         self.wallColor = rgbString(234, 107, 107)
 
+        self.spriteInSight = False
+
     def drawMap(self, app, canvas):
+        self.spriteInSight = False
         heights = self.distsToHeights(app, canvas)
         planeWidth = app.width
         planeHeight = app.height
@@ -94,6 +98,9 @@ class Raycaster:
 # rAdj and cAdj needed because intersection checks top most cell, causing
 # errors in cases Vertical Left and Horizontal up. 
     def checkFirstIntersection(self, app, px, py, rAdj, cAdj):
+        if checkSpriteInSight(app, px, py):
+            self.spriteInSight = True
+
         (intersectionRow, intersectionCol) = getCell(app, px, py, self.maze)
         # Only check if point on map
         if (intersectionRow >= 0 and intersectionRow < len(self.maze) and 
@@ -104,6 +111,9 @@ class Raycaster:
         return (False, 0)
 
     def checkOtherIntersections(self, app, px, py, rAdj, cAdj):
+        if checkSpriteInSight(app, px, py):
+            self.spriteInSight = True
+
         (intersectionRow, intersectionCol) = getCell(app, px, py, self.maze)
         if (intersectionRow >= 0 and intersectionRow < len(self.maze) and 
             intersectionCol >= 0 and intersectionCol < len(self.maze)):
@@ -213,3 +223,6 @@ class Raycaster:
         # self.getDists(app, canvas)
         # print(app.player.angle)
         # self.getRay(app, app.player.angle, canvas)
+
+    def timerFired(self, app):
+        app.enemyIsVisible = self.spriteInSight

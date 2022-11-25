@@ -32,6 +32,7 @@ def appStarted(app):
 def timerFired(app):
     app.enemy.timerFired(app)
     app.playerShadow.timerFired(app)
+    app.raycaster.timerFired(app)
 
 def mouseMoved(app, event):
     app.player.mouseMoved(app, event)
