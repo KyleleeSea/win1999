@@ -33,6 +33,7 @@ class Enemy:
         self.followSpeed = (app.player.moveVel)*0.95
         # enemySize probably not needed after sprite animated
         self.enemySize = int(min(app.width, app.height)//(len(self.maze.maze)*4))
+        self.collisionDist = 30
 
         # Timer logic for follow
         # only change secondsToWait
@@ -195,16 +196,33 @@ class Enemy:
 
         bestDir = (0, 0)
         bestDist = 1000
-        directions = [(0,1), (0, -1), (1,0), (-1, 0)]
-        for direction in directions:
-            newRow = self.row + direction[0]
-            newCol = self.col + direction[1]
-            if self.isInBounds(newRow, newCol):
-                dist = getDistance(app.player.row, app.player.col, newRow, newCol)
-                if dist < bestDist:
-                    bestDist = dist
-                    bestDir = direction
-        self.changeVelFollow(bestDir[1], bestDir[0])
+        if (getDistance(app.player.yPos, app.player.xPos, self.yPos, self.xPos)
+        > self.collisionDist):
+            directions = [(0, self.followSpeed), (0, -self.followSpeed),
+            (self.followSpeed, 0), (-self.followSpeed, 0)]
+            for direction in directions:
+                newX = self.xPos + direction[0]
+                newY = self.yPos + direction[1]
+                (newRow, newCol) = getCell(app, newX, newY, self.maze.maze)
+                if self.isInBounds(newRow, newCol):
+                    dist = getDistance(app.player.xPos, app.player.yPos,
+                    newX, newY)
+                    if dist < bestDist:
+                        bestDist = dist
+                        bestDir = direction
+            self.xPos += bestDir[0]
+            self.yPos += bestDir[1]
+
+        # directions = [(0,1), (0, -1), (1,0), (-1, 0)]
+        # for direction in directions:
+        #     newRow = self.row + direction[0]
+        #     newCol = self.col + direction[1]
+        #     if self.isInBounds(newRow, newCol):
+        #         dist = getDistance(app.player.row, app.player.col, newRow, newCol)
+        #         if dist < bestDist:
+        #             bestDist = dist
+        #             bestDir = direction
+        # self.changeVelFollow(bestDir[1], bestDir[0])
 
 # Action Helpers
     def checkStraightLine(self, app):
@@ -281,6 +299,9 @@ class Enemy:
                 self.animationCounter = 0
 
     def movementUpdates(self, app):
+        if self.state == 'following':
+            self.follow(app)
+            return
         # Only update state if in new row or new col
         (cellWidth, cellHeight) = getCellSpecs(app, self.maze.maze)
         (xDiffPos, xDiffNeg, yDiffPos, yDiffNeg) = (self.lastX+cellWidth-5,
@@ -315,8 +336,8 @@ class Enemy:
             self.startHunt(app)
         elif self.state == 'hunting':
             self.hunt(app)
-        elif self.state == 'following':
-            self.follow(app)
+        # elif self.state == 'following':
+        #     self.follow(app)
 
 # View
     def redraw(self, app, canvas):

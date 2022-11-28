@@ -12,7 +12,7 @@ def appStarted(app):
     app.distToPlane = (app.width/2)*math.tan(math.radians(30))
     app.enemyIsVisible = True
 
-    app.timerDelay = 100
+    app.timerDelay = 150
     app.maze = Maze(10)
     app.level = 1
     exitBlockProportion = 0.6
