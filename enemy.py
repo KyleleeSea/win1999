@@ -20,6 +20,8 @@ class Enemy:
         # so there's no way the enemy has already visited 1,1 at the start 
         self.lastRow = 1
         self.lastCol = 1
+        self.lastX = self.xPos-500
+        self.lastY = self.yPos-500
         self.xVel = 0
         self.yVel = 0
         self.state = 'wandering'
@@ -126,6 +128,8 @@ class Enemy:
             # Remove latest so enemy doesn't stay stationary
             # Check if at least two
             if len(self.movingBack) >= 2:
+                # print('moving back')
+                # print(self.movingBack)
                 self.movingBack.pop()
                 # Move back to last cell 
                 lastCell = self.movingBack[-1]
@@ -140,7 +144,7 @@ class Enemy:
                     newRow = self.row + move[0]
                     newCol = self.col + move[1]
                     if self.isInBounds(newRow, newCol):
-                        self.changeVel(move[1], move[0])
+                        self.changeVelWander(move[1], move[0])
                         self.visited.add((newRow, newCol))
 
     def startHunt(self, app):
@@ -278,12 +282,21 @@ class Enemy:
 
     def movementUpdates(self, app):
         # Only update state if in new row or new col
-        if self.row != self.lastRow or self.col != self.lastCol:
+        (cellWidth, cellHeight) = getCellSpecs(app, self.maze.maze)
+        (xDiffPos, xDiffNeg, yDiffPos, yDiffNeg) = (self.lastX+cellWidth-5,
+        self.lastX-cellWidth+5, self.lastY+cellHeight-5, self.lastY-cellHeight+5)
+
+        if (self.xPos > xDiffPos or self.xPos < xDiffNeg or 
+        self.yPos > yDiffPos or self.yPos < yDiffNeg):
+            # print(self.state)
+        # if self.row != self.lastRow or self.col != self.lastCol:
             self.changeState(app)
+            self.lastX = self.xPos
+            self.lastY = self.yPos
         # Always move
         self.move()
-        self.lastRow = self.row
-        self.lastCol = self.col
+        # self.lastRow = self.row
+        # self.lastCol = self.col
         self.updateRowCol(app)
 
         if self.state == 'following':

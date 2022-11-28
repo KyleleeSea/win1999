@@ -12,7 +12,7 @@ def appStarted(app):
     app.distToPlane = (app.width/2)*math.tan(math.radians(30))
     app.enemyIsVisible = True
 
-    app.timerDelay = 200
+    app.timerDelay = 100
     app.maze = Maze(10)
     app.level = 1
     exitBlockProportion = 0.6
@@ -32,7 +32,6 @@ def appStarted(app):
 def timerFired(app):
     app.enemy.timerFired(app)
     app.playerShadow.timerFired(app)
-    app.raycaster.timerFired(app)
 
 def mouseMoved(app, event):
     app.player.mouseMoved(app, event)
