@@ -15,20 +15,20 @@ class Enemy:
         self.maze = maze
         self.xPos, self.yPos, self.row, self.col = self.spawn(app)
         # Currently subtracting arbitary value to start movement 
-        self.lastX = self.xPos-500
-        self.lastY = self.yPos-500
+        self.lastX = self.xPos-150
+        self.lastY = self.yPos-150
         self.xVel = 0
         self.yVel = 0
         self.state = 'wandering'
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
-        self.wanderSpeed = (app.player.moveVel)*1.2
+        self.wanderSpeed = (app.player.moveVel)*4
         self.huntSpeed = (app.player.moveVel)*2
         self.followSpeed = (app.player.moveVel)*0.95
         # enemySize probably not needed after sprite animated
-        self.enemySize = int(min(app.width, app.height)//(len(self.maze.maze)*4))
-        self.collisionDist = 30
+        self.enemySize = app.player.playerSize
+        self.collisionDist = 15
 
         # Timer logic for follow
         # only change secondsToWait
@@ -37,47 +37,6 @@ class Enemy:
         self.followIntervals = msToFollow//app.timerDelay
         self.currentInterval = 0
 
-        # Implementation inspired by my previous work for Hack112
-        # https://github.com/KyleleeSea/slashnbash/blob/main/earth_enemy.py
-        # Load spritesheets
-        spritesheet = app.loadImage('./assets/bonziBuddy.png')
-        startX = 0
-        xWidth = 60.23
-        self.animationCounter = 0
-
-        self.wanderAnim = []
-        (startY, endY) = getYs(5)
-        for i in range(7):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.wanderAnim.append(animation)
-        for i in range(10,14):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.wanderAnim.append(animation)
-
-        self.huntAnim = []
-        (startY, endY) = getYs(14)
-        for i in range(8,17):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.huntAnim.append(animation)
-        (startY, endY) = getYs(15)
-        for i in range(8):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.huntAnim.append(animation)
-
-        self.followAnim = []
-        (startY, endY) = getYs(9)
-        for i in range(2,11):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.followAnim.append(animation)
-        for i in range(11,3,-1):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.followAnim.append(animation)
 # Controller 
     def spawn(self, app):
         while True:
@@ -85,7 +44,8 @@ class Enemy:
             col = random.randint(1, self.maze.size - 1)
             # Check 1) Cell open. 2) Cell reasonably far from player
             if (self.maze.maze[row][col] == 0 and 
-                (row+col) >= self.maze.size//1.5):
+                (row+col) >= self.maze.size//2 and 
+                (row+col) <= self.maze.size//1.5):
                 bounds = getCellBounds(row, col, self.maze.maze, app)
                 # Average of bounds to get midpoint
                 xPos = (bounds[0] + bounds[2])//2
@@ -221,12 +181,14 @@ class Enemy:
             cell1 = (self.row + yAdj, self.col + xAdj)
             cell2 = (self.row + yAdj*2, self.col + xAdj*2)
             # Check cells are open
-            if (self.maze.maze[cell1[0]][cell1[1]] == 0 and 
-            self.maze.maze[cell2[0]][cell2[1]] == 0):
+            if (cell1[0] >= 0 and cell1[0] < len(self.maze.maze) and
+            cell2[0] >= 0 and cell2[0] < len(self.maze.maze)):
+                if (self.maze.maze[cell1[0]][cell1[1]] == 0 and 
+                self.maze.maze[cell2[0]][cell2[1]] == 0):
                 # Check player at open cell 
-                if ((app.player.row, app.player.col) == cell1 or 
-                (app.player.row, app.player.col) == cell2):
-                    return True
+                    if ((app.player.row, app.player.col) == cell1 or 
+                    (app.player.row, app.player.col) == cell2):
+                        return True
         return False
 
     def huntingRangeCheck(self, app):
@@ -269,23 +231,6 @@ class Enemy:
     def rushCondition(self):
         pass
 # Action logic
-    def animationUpdates(self, app):
-        if self.state == 'wandering':
-            self.animationCounter += 1 
-
-            if self.animationCounter >= len(self.wanderAnim):
-                self.animationCounter = 0
-        elif self.state == 'hunting' or self.state == 'startHunting':
-            self.animationCounter += 1 
-
-            if self.animationCounter >= len(self.huntAnim):
-                self.animationCounter = 0
-        elif self.state == 'following':
-            self.animationCounter += 1 
-
-            if self.animationCounter >= len(self.followAnim):
-                self.animationCounter = 0
-
     def movementUpdates(self, app):
         # Different movement pipeline for following algorithm 
         if self.state == 'following':
@@ -312,7 +257,6 @@ class Enemy:
         
     def timerFired(self, app):
         self.movementUpdates(app)
-        self.animationUpdates(app)
 
 
     def changeState(self, app):
@@ -325,13 +269,6 @@ class Enemy:
 
 # View
     def redraw(self, app, canvas):
-        if self.state == 'wandering':
-            animation = self.wanderAnim[self.animationCounter]
-        elif self.state == 'hunting' or self.state == 'startHunting':
-            animation = self.huntAnim[self.animationCounter]
-        elif self.state == 'following':
-            animation = self.followAnim[self.animationCounter]
-
         (x0, y0, x1, y1) = (self.xPos - self.enemySize, self.yPos - self.enemySize,
         self.xPos + self.enemySize, self.yPos + self.enemySize)
-        canvas.create_oval(x0//4, y0//4, x1//4, y1//4, fill='purple')
+        canvas.create_oval(x0//7, y0//7, x1//7, y1//7, fill='orange')

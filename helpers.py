@@ -1,6 +1,6 @@
 # View Helpers
 def getCellSpecs(app, maze):
-    return (150, 60)
+    return (app.cellWidth, app.cellHeight)
     width = app.width
     height = app.height
     (numRows, numCols) = (len(maze), len(maze[0]))
@@ -21,8 +21,8 @@ def getCell(app, x, y, maze):
     cellWidth  = gridWidth / len(maze[0])
     cellHeight = gridHeight / len(maze)
 
-    row = int((y) / cellHeight)
-    col = int((x) / cellWidth)
+    row = int((y) / app.cellHeight)
+    col = int((x) / app.cellWidth)
 
     return (row, col)
 
@@ -36,12 +36,3 @@ def rgbString(r, g, b):
 
 def getDistance(x0, y0, x1, y1):
     return ((x1-x0)**2 + (y1-y0)**2)**(1/2)
-# Spritesheet helpers
-# Programmed by me previously for Hack112
-# https://github.com/KyleleeSea/slashnbash/blob/main/helpers.py
-def cutSpritesheet(startX, adjW, w, startY, endY, spritesheet, app):
-    animation = spritesheet.crop((startX+adjW, startY, (w-startX)+adjW, endY))
-    return animation
-
-def getYs(row):
-    return (48.19*row, 48.19*(row+1))

@@ -138,19 +138,19 @@ class Maze:
 # Maze drawing helpers
 def drawWall(app, canvas, row, col, maze):
     (x0, y0, x1, y1) = getCellBounds(row, col, maze, app)
-    canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='black')
+    canvas.create_rectangle(x0//7, y0//7, x1//7, y1//7, fill='black')
 
 def drawOpen(app, canvas, row, col, maze):
     (x0, y0, x1, y1) = getCellBounds(row, col, maze, app)
 
     # Debugging code
-    if (row, col) in app.checkedCells:
-        canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='green', outline='black')
+    # if (row, col) in app.checkedCells:
+    #     canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='green', outline='black')
 
     # if row == app.player.lastRow and col == app.player.lastCol:
     #     canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='green', outline='black')
 
-    # if (row, col) in app.playerShadow.shadow:
-    #     canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='yellow', outline='black')
+    if (row, col) in app.playerShadow.shadow:
+        canvas.create_rectangle(x0//7, y0//7, x1//7, y1//7, fill='yellow', outline='black')
     else:
-        canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='white', outline='black')
+        canvas.create_rectangle(x0//7, y0//7, x1//7, y1//7, fill='white', outline='black')

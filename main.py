@@ -8,13 +8,14 @@ from playerShadow import *
 from raycaster import *
 
 def appStarted(app):
-    app.checkedCells = set()
+    app.cellHeight = 128
+    app.cellWidth = 128
 
     app.wallHeight = (1/6)*app.height
     app.distToPlane = (app.width/2)*math.tan(math.radians(30))
 
     app.timerDelay = 150
-    app.maze = Maze(10)
+    app.maze = Maze(30)
     app.level = 1
     exitBlockProportion = 0.6
     app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)
@@ -44,7 +45,7 @@ def redrawAll(app, canvas):
     app.raycaster.redraw(app, canvas)
 
     app.maze.redraw(app, canvas)
-    app.exitBlock.redraw(app, canvas)
+    # app.exitBlock.redraw(app, canvas)
     app.player.redraw(app, canvas)
     app.enemy.redraw(app, canvas)
 

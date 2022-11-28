@@ -20,12 +20,12 @@ class Raycaster:
         self.angleBetweenRays = self.FOV/self.numRays
 
         self.baseWallColor = (255, 107, 107)
-        self.baseSkyAndGroundColor = (255, 255, 255)
+        self.baseSkyAndGroundColor = rgbString(69, 69, 69)
         # self.skyAndGroundColor = rgbString(255, 255, 255)
         # self.wallColor = rgbString(255, 107, 107)
 
     def drawMap(self, app, canvas):
-        print(self.cellWidth, self.cellHeight)
+        # print(self.cellWidth, self.cellHeight)
         heightsWithColors = self.distsToHeights(app, canvas)
         planeWidth = app.width
         planeHeight = app.height
@@ -37,10 +37,8 @@ class Raycaster:
             (x0, x1) = (currX, currX+xAdj)
             self.drawWall(app, canvas, x0, x1, cy, wallSlice['projHeight'],
             wallSlice['wallColor'])
-            self.drawSky(app, canvas, x0, x1, cy, wallSlice['projHeight'],
-            wallSlice['skyAndGroundColor'])
-            self.drawGround(app, canvas, x0, x1, cy, wallSlice['projHeight'],
-            wallSlice['skyAndGroundColor'])
+            self.drawSky(app, canvas, x0, x1, cy, wallSlice['projHeight'])
+            self.drawGround(app, canvas, x0, x1, cy, wallSlice['projHeight'])
 
             currX = x1
 
@@ -50,15 +48,15 @@ class Raycaster:
         canvas.create_rectangle(x0,y0,x1,y1,fill=color, 
         outline=color)
 
-    def drawSky(self, app, canvas, x0, x1, cy, height, color):
+    def drawSky(self, app, canvas, x0, x1, cy, height):
         (y0, y1) = (cy-(height/2), 0)
-        canvas.create_rectangle(x0,y0,x1,y1,fill='black', 
-        outline='black')
+        canvas.create_rectangle(x0,y0,x1,y1,fill=self.baseSkyAndGroundColor, 
+        outline=self.baseSkyAndGroundColor)
 
-    def drawGround(self, app, canvas, x0, x1, cy, height, color):
+    def drawGround(self, app, canvas, x0, x1, cy, height):
         (y0, y1) = (cy+(height/2), app.height)
-        canvas.create_rectangle(x0,y0,x1,y1,fill='black', 
-        outline='black')
+        canvas.create_rectangle(x0,y0,x1,y1,fill=self.baseSkyAndGroundColor, 
+        outline=self.baseSkyAndGroundColor)
 
     def distsToHeights(self, app, canvas):
         dists = self.getDists(app, canvas)
@@ -68,8 +66,7 @@ class Raycaster:
         for dist in dists:
             projHeight = (app.wallHeight/dist['dist'])*app.distToPlane
             projHeightsWithColors.append({'projHeight': projHeight,
-            'wallColor': dist['wallColor'], 
-            'skyAndGroundColor': dist['skyAndGroundColor']})
+            'wallColor': dist['wallColor']})
             # projectedHeights.append(projHeight)
         return projHeightsWithColors
 
@@ -94,12 +91,10 @@ class Raycaster:
         else:
             distVer = self.verticalLeftRay(app, angle, canvas)
         if distHor[2] < distVer[2]:
-            return {'dist': distHor[2], 'wallColor': distHor[3],
-            'skyAndGroundColor': distHor[4]}
+            return {'dist': distHor[2], 'wallColor': distHor[3]}
             # canvas.create_line(app.player.xPos, app.player.yPos, distHor[0], distHor[1], fill="green")        
         else:
-            return {'dist': distVer[2], 'wallColor': distVer[3],
-            'skyAndGroundColor': distVer[4]}
+            return {'dist': distVer[2], 'wallColor': distVer[3]}
             # return {distVer[2]}
             # canvas.create_line(app.player.xPos, app.player.yPos, distVer[0], distVer[1], fill="orange")        
 
@@ -138,7 +133,7 @@ class Raycaster:
             divisor = 1
         elif divisor > 9:
             divisor = 9
-        print(divisor)
+        # print(divisor)
 
         wallColor = []
         skyAndGroundColor = []

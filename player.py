@@ -13,7 +13,7 @@ class Player:
         self.exitBlock = maze.exitBlock
         self.angle = 90
         # self.angleVel = 10
-        self.moveVel = int(min(app.width, app.height)//100) 
+        self.moveVel = app.cellWidth//8
         #Make player slower by increasing denominator of moveVel for actual
         # game. Maybe 150?
         (startX0, startY0, startX1, startY1) = getCellBounds(1, 1, self.maze, 
@@ -25,7 +25,7 @@ class Player:
         self.lastRow = 1
         self.lastCol = 1
         # playerSize temporary
-        self.playerSize = int(min(app.width, app.height)//(len(maze.maze)*6))
+        self.playerSize = int(app.cellWidth//5)
 
     def adjustAngle(self, angleDiff):
         self.angle = (self.angle - angleDiff) % 360
@@ -79,11 +79,11 @@ class Player:
         return False
 
     def redraw(self, app, canvas):
-        canvas.create_oval((self.xPos-self.playerSize)//4, (self.yPos-self.playerSize)//4,
-        (self.xPos + self.playerSize)//4, (self.yPos + self.playerSize)//4,
+        canvas.create_oval((self.xPos-self.playerSize)//7, (self.yPos-self.playerSize)//7,
+        (self.xPos + self.playerSize)//7, (self.yPos + self.playerSize)//7,
         fill='orange')
         # Temporary 2D debugging line that'll show angle facing
-        canvas.create_line(self.xPos//4, self.yPos//4, 
-        (self.xPos+(self.moveVel * math.sin(math.radians(self.angle)))*10)//4,
-        (self.yPos+self.moveVel * math.cos(math.radians(self.angle))*10)//4, 
+        canvas.create_line(self.xPos//7, self.yPos//7, 
+        (self.xPos+(self.moveVel * math.sin(math.radians(self.angle)))*10)//7,
+        (self.yPos+self.moveVel * math.cos(math.radians(self.angle))*10)//7, 
         fill='red')
