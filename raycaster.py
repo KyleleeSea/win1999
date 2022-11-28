@@ -123,6 +123,12 @@ class Raycaster:
         return (False, 0)
 
     def wallShadeFormula(self, px, py, app):
+        (row, col) = getCell(app, px, py, app.maze.maze)
+        if (row, col) == (app.enemy.row, app.enemy.col):
+            self.baseSkyAndGroundColor = rgbString(0, 0, 0)
+            return rgbString(0, 0, 0)
+        self.baseSkyAndGroundColor = rgbString(69, 69, 69)
+
         enemyToSliceDist = getDistance(px, py, app.enemy.xPos, app.enemy.yPos)
         # Getting diagonal of one quadrant
         quadrantX = (app.maze.size/2)*self.cellWidth
@@ -136,15 +142,10 @@ class Raycaster:
         # print(divisor)
 
         wallColor = []
-        skyAndGroundColor = []
         for part in self.baseWallColor:
             wallColor.append(int(part/divisor))
-        for part in self.baseSkyAndGroundColor:
-            skyAndGroundColor.append(int(part/divisor))
         wallColor = rgbString(wallColor[0], wallColor[1], wallColor[2])
-        skyAndGroundColor = rgbString(skyAndGroundColor[0], 
-        skyAndGroundColor[1], skyAndGroundColor[2])
-        return {'wallColor': wallColor, 'skyAndGroundColor': skyAndGroundColor}
+        return wallColor
 
     def verticalRightRay(self, app, angle, canvas):
     # end variable first arg: True or False condition. second arg: distance
@@ -163,9 +164,8 @@ class Raycaster:
             end = self.checkOtherIntersections(app, px, py, 0, 0)
 
         # print(getDistance(px, py, app.enemy.xPos, app.enemy.yPos))
-        colors = self.wallShadeFormula(px, py, app)
-        return (px, py, end[1], colors['wallColor'], 
-        colors['skyAndGroundColor'])
+        color = self.wallShadeFormula(px, py, app)
+        return (px, py, end[1], color)
         # return end[1]
         # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="green")        
 
@@ -187,9 +187,8 @@ class Raycaster:
             end = self.checkOtherIntersections(app, px, py, 0, -1)
         # Test other intersections until hit wall
 
-        colors = self.wallShadeFormula(px, py, app)
-        return (px, py, end[1], colors['wallColor'], 
-        colors['skyAndGroundColor'])        # return end[1]
+        color = self.wallShadeFormula(px, py, app)
+        return (px, py, end[1], color)
         # print(end[1])
         # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="green")        
 
@@ -212,9 +211,8 @@ class Raycaster:
             py = py+self.cellHeight
             end = self.checkOtherIntersections(app, px, py, 0, 0)
 
-        colors = self.wallShadeFormula(px, py, app)
-        return (px, py, end[1], colors['wallColor'], 
-        colors['skyAndGroundColor'])       
+        color = self.wallShadeFormula(px, py, app)
+        return (px, py, end[1], color)  
          # return end[1]
         # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="orange")        
 
@@ -240,9 +238,8 @@ class Raycaster:
             py = py-self.cellHeight
             end = self.checkOtherIntersections(app, px, py, -1, 0)
 
-        colors = self.wallShadeFormula(px, py, app)
-        return (px, py, end[1], colors['wallColor'], 
-        colors['skyAndGroundColor'])        # return end[1]
+        color = self.wallShadeFormula(px, py, app)
+        return (px, py, end[1], color)
         # canvas.create_oval(px-5,py-5,px+5,py+5,fill='green')
         # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="orange")        
 

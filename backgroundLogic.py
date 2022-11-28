@@ -33,11 +33,30 @@ def checkLegalMove(lastCol,lastRow, newX, newY, maze, app):
     # Checking diagonals
     # Only run check if moving diagonally, otherwise bugs.
     if row-lastRow != 0 and col-lastCol!= 0:
-        if maze[lastRow][lastCol + 1] == 1 and maze[row][col-1] == 1:
-            return False
-        elif maze[lastRow][lastCol-1] == 1 and maze[row][col+1] == 1:
-            return False
+        # Check in bounds
+        if (lastRow >= 0 and lastRow < len(maze) and row >= 0 and row < len(maze)
+        and lastCol + 1 < len(maze) and lastCol - 1 >= 0 and col-1 >= 0 and
+        col+1 < len(maze)):
+            if maze[lastRow][lastCol + 1] == 1 and maze[row][col-1] == 1:
+                return False
+            elif maze[lastRow][lastCol-1] == 1 and maze[row][col+1] == 1:
+                return False
     # Check cell open
     if maze[row][col] == 0:
         return True
     return False
+
+def checkCollision(app):
+    if (app.player.row, app.player.col) == (app.enemy.row, app.enemy.col):
+        if app.collisionCounter >= app.dieIntervals:
+            app.mode = 'death'
+        else:
+            app.collisionCounter += 1
+    else:
+        app.collisionCounter = 0
+
+def drawCollision(app, canvas):
+    # Image loaded in game
+    if app.collisionCounter > 0:
+        canvas.create_image(app.width//2, app.height//2, 
+            image=ImageTk.PhotoImage(app.collisionImage))

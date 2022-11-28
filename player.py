@@ -13,7 +13,7 @@ class Player:
         self.exitBlock = maze.exitBlock
         self.angle = 90
         # self.angleVel = 10
-        self.moveVel = app.cellWidth//8
+        self.moveVel = app.cellWidth//15
         #Make player slower by increasing denominator of moveVel for actual
         # game. Maybe 150?
         (startX0, startY0, startX1, startY1) = getCellBounds(1, 1, self.maze, 
@@ -47,7 +47,6 @@ class Player:
             if self.checkExit(self.exitBlock):
                 #nextLevel from backgroundLogic.py
                 nextLevel(app)
-        # print(self.row, self.col)
         # Row col updating for shadow logic
         if self.row != self.lastRow or self.col != self.lastCol:
             # Account for starter value

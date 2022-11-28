@@ -16,11 +16,6 @@ def getCellBounds(row, col, maze, app):
 
 # https://www.cs.cmu.edu/~112/notes/notes-animations-part2.html
 def getCell(app, x, y, maze):
-    gridWidth  = app.width
-    gridHeight = app.height
-    cellWidth  = gridWidth / len(maze[0])
-    cellHeight = gridHeight / len(maze)
-
     row = int((y) / app.cellHeight)
     col = int((x) / app.cellWidth)
 
