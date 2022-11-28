@@ -15,11 +15,7 @@ class Enemy:
     def __init__(self, app, maze):
         self.maze = maze
         self.xPos, self.yPos, self.row, self.col = self.spawn(app)
-        # May have to change lastRow and lastCol if we end up starting the
-        # player in a random location. Current logic: Player starts at 1,1
-        # so there's no way the enemy has already visited 1,1 at the start 
-        self.lastRow = 1
-        self.lastCol = 1
+        # Currently subtracting arbitary value to start movement 
         self.lastX = self.xPos-500
         self.lastY = self.yPos-500
         self.xVel = 0
@@ -196,10 +192,14 @@ class Enemy:
 
         bestDir = (0, 0)
         bestDist = 1000
+        # Stop movement if already in collision area
         if (getDistance(app.player.yPos, app.player.xPos, self.yPos, self.xPos)
         > self.collisionDist):
             directions = [(0, self.followSpeed), (0, -self.followSpeed),
             (self.followSpeed, 0), (-self.followSpeed, 0)]
+            # Utilizes different format from wander and hunt because
+            # follow is meant to create collisions, needing more
+            # exact movement 
             for direction in directions:
                 newX = self.xPos + direction[0]
                 newY = self.yPos + direction[1]
@@ -212,17 +212,6 @@ class Enemy:
                         bestDir = direction
             self.xPos += bestDir[0]
             self.yPos += bestDir[1]
-
-        # directions = [(0,1), (0, -1), (1,0), (-1, 0)]
-        # for direction in directions:
-        #     newRow = self.row + direction[0]
-        #     newCol = self.col + direction[1]
-        #     if self.isInBounds(newRow, newCol):
-        #         dist = getDistance(app.player.row, app.player.col, newRow, newCol)
-        #         if dist < bestDist:
-        #             bestDist = dist
-        #             bestDir = direction
-        # self.changeVelFollow(bestDir[1], bestDir[0])
 
 # Action Helpers
     def checkStraightLine(self, app):
@@ -299,25 +288,23 @@ class Enemy:
                 self.animationCounter = 0
 
     def movementUpdates(self, app):
+        # Different movement pipeline for following algorithm 
         if self.state == 'following':
             self.follow(app)
             return
-        # Only update state if in new row or new col
+
+        # Only update state if in cell center
         (cellWidth, cellHeight) = getCellSpecs(app, self.maze.maze)
         (xDiffPos, xDiffNeg, yDiffPos, yDiffNeg) = (self.lastX+cellWidth-5,
         self.lastX-cellWidth+5, self.lastY+cellHeight-5, self.lastY-cellHeight+5)
 
         if (self.xPos > xDiffPos or self.xPos < xDiffNeg or 
         self.yPos > yDiffPos or self.yPos < yDiffNeg):
-            # print(self.state)
-        # if self.row != self.lastRow or self.col != self.lastCol:
             self.changeState(app)
             self.lastX = self.xPos
             self.lastY = self.yPos
         # Always move
         self.move()
-        # self.lastRow = self.row
-        # self.lastCol = self.col
         self.updateRowCol(app)
 
         if self.state == 'following':
@@ -336,8 +323,6 @@ class Enemy:
             self.startHunt(app)
         elif self.state == 'hunting':
             self.hunt(app)
-        # elif self.state == 'following':
-        #     self.follow(app)
 
 # View
     def redraw(self, app, canvas):

@@ -144,10 +144,13 @@ def drawOpen(app, canvas, row, col, maze):
     (x0, y0, x1, y1) = getCellBounds(row, col, maze, app)
 
     # Debugging code
-    if row == app.player.lastRow and col == app.player.lastCol:
+    if (row, col) in app.checkedCells:
         canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='green', outline='black')
 
-    if (row, col) in app.playerShadow.shadow:
-        canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='yellow', outline='black')
+    # if row == app.player.lastRow and col == app.player.lastCol:
+    #     canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='green', outline='black')
+
+    # if (row, col) in app.playerShadow.shadow:
+    #     canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='yellow', outline='black')
     else:
         canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='white', outline='black')

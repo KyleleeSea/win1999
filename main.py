@@ -8,6 +8,8 @@ from playerShadow import *
 from raycaster import *
 
 def appStarted(app):
+    app.checkedCells = set()
+
     app.wallHeight = (1/6)*app.height
     app.distToPlane = (app.width/2)*math.tan(math.radians(30))
     app.enemyIsVisible = True
@@ -32,6 +34,7 @@ def appStarted(app):
 def timerFired(app):
     app.enemy.timerFired(app)
     app.playerShadow.timerFired(app)
+    app.raycaster.timerFired(app)
 
 def mouseMoved(app, event):
     app.player.mouseMoved(app, event)

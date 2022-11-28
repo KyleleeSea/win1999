@@ -37,8 +37,8 @@ def getSpriteDims(app):
     scale = app.distToPlane * (app.wallHeight/dist)
     return scale
 
-def checkSpriteInSight(app, x, y):
+def checkSpriteInSight(app, x, y, rAdj, cAdj):
     (checkRow, checkCol) = getCell(app, x, y, app.maze.maze)
-    if app.enemy.row == checkRow and app.enemy.col == checkCol:
+    if app.enemy.row == checkRow+rAdj and app.enemy.col == checkCol+cAdj:
         print('true')
         return True
