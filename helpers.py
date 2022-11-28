@@ -1,5 +1,6 @@
 # View Helpers
 def getCellSpecs(app, maze):
+    return (150, 60)
     width = app.width
     height = app.height
     (numRows, numCols) = (len(maze), len(maze[0]))

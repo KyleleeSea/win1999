@@ -9,7 +9,6 @@
 import random 
 from helpers import *
 from backgroundLogic import *
-from spriteCaster import *
 
 class Enemy:
     def __init__(self, app, maze):
@@ -336,16 +335,3 @@ class Enemy:
         (x0, y0, x1, y1) = (self.xPos - self.enemySize, self.yPos - self.enemySize,
         self.xPos + self.enemySize, self.yPos + self.enemySize)
         canvas.create_oval(x0//4, y0//4, x1//4, y1//4, fill='purple')
-        
-        # first two args change position center
-        # might have to rescale here...
-        if app.enemyIsVisible:
-            (x, y) = getSpriteCoords(app)
-            baseWidthInPx = 48.19
-            enemy3DSize = getSpriteDims(app)/baseWidthInPx
-            if enemy3DSize > 30:
-                enemy3DSize = 30
-            if enemy3DSize > 0.5:
-                image = app.scaleImage(animation, enemy3DSize)
-                canvas.create_image(x, 
-                y, image=ImageTk.PhotoImage(image))
