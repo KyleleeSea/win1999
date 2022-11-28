@@ -39,6 +39,6 @@ def getSpriteDims(app):
 
 def checkSpriteInSight(app, x, y, rAdj, cAdj):
     (checkRow, checkCol) = getCell(app, x, y, app.maze.maze)
-    if app.enemy.row == checkRow+rAdj and app.enemy.col == checkCol+cAdj:
-        print('true')
+    if app.enemy.row == checkRow+rAdj and app.enemy.col+cAdj == checkCol:
+        # print('true')
         return True

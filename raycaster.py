@@ -13,6 +13,7 @@ class Raycaster:
         self.skyAndGroundColor = rgbString(165, 169, 166)
         self.wallColor = rgbString(234, 107, 107)
 
+        self.spriteInSightMidCheck = False
         self.spriteInSight = False
 
     def testFunc(self, app):
@@ -77,12 +78,16 @@ class Raycaster:
         else:
             distVer = self.verticalLeftRay(app, angle)
         if distHor[2] < distVer[2]:
+            # print(distHor[3])
             if distHor[3] == True:
+                print('hit')
                 self.spriteInSight = True
             return distHor[2]
             # canvas.create_line(app.player.xPos, app.player.yPos, distHor[0], distHor[1], fill="green")        
         else:
+            # print(distVer[3])
             if distVer[3] == True:
+                print('hit')
                 self.spriteInSight = True
             return distVer[2]
             # canvas.create_line(app.player.xPos, app.player.yPos, distVer[0], distVer[1], fill="orange")        
@@ -90,9 +95,7 @@ class Raycaster:
 # errors in cases Vertical Left and Horizontal up. 
     def checkFirstIntersection(self, app, px, py, rAdj, cAdj):
         if checkSpriteInSight(app, px, py, rAdj, cAdj):
-            spriteInSight = True
-        else:
-            spriteInSight = False
+            self.spriteInSightMidCheck = True
 
         (intersectionRow, intersectionCol) = getCell(app, px, py, self.maze)
         # app.checkedCells.add((intersectionRow, intersectionCol))
@@ -101,14 +104,12 @@ class Raycaster:
         intersectionCol >= 0 and intersectionCol < len(self.maze)):
             if self.maze[intersectionRow+rAdj][intersectionCol+cAdj] == 1:
                 return (True, getDistance(app.player.xPos, app.player.yPos, 
-                px, py), spriteInSight)
-        return (False, 0, spriteInSight)
+                px, py))
+        return (False, 0)
 
     def checkOtherIntersections(self, app, px, py, rAdj, cAdj):
         if checkSpriteInSight(app, px, py, rAdj, cAdj):
-            spriteInSight = True
-        else:
-            spriteInSight = False
+            self.spriteInSightMidCheck = True
 
         (intersectionRow, intersectionCol) = getCell(app, px, py, self.maze)
         # app.checkedCells.add((intersectionRow, intersectionCol))
@@ -117,13 +118,14 @@ class Raycaster:
             intersectionCol >= 0 and intersectionCol < len(self.maze)):
             if self.maze[intersectionRow+rAdj][intersectionCol+cAdj] == 1:
                 return (True, getDistance(app.player.xPos, app.player.yPos, px, 
-                py), spriteInSight)
+                py))
             # If point off map, just return a giant number 
         else:
-            return (True, 10000000000000, spriteInSight)
-        return (False, 0, spriteInSight)
+            return (True, 10000000000000)
+        return (False, 0)
     
     def verticalRightRay(self, app, angle):
+        self.spriteInSightMidCheck = False
     # end variable first arg: True or False condition. second arg: distance
     # value. 
         end = (False, 0)
@@ -136,10 +138,11 @@ class Raycaster:
             px = px+self.cellWidth
             py = py-Ya
             end = self.checkOtherIntersections(app, px, py, 0, 0)
-        return (px, py, end[1], end[2])
+        return (px, py, end[1], self.spriteInSightMidCheck )
         # return end[1]
         # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="green")        
     def verticalLeftRay(self, app, angle):
+        self.spriteInSightMidCheck = False
         end = (False, 0)
         #3.5*app.margin is a trivial fix to a bug that exists without the
         #3.5* multiplier. Revisit here if future bugs.
@@ -154,11 +157,12 @@ class Raycaster:
             py = py+Ya
             end = self.checkOtherIntersections(app, px, py, 0, -1)
         # Test other intersections until hit wall
-        return (px, py, end[1] , end[2])
+        return (px, py, end[1], self.spriteInSightMidCheck)
         # return end[1]
         # print(end[1])
         # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="green")        
     def horizontalDownRay(self, app, angle):
+        self.spriteInSightMidCheck = False
         end = (False, 0)
         # Horizontal
         # First intersection
@@ -174,10 +178,11 @@ class Raycaster:
             px = px-Xa
             py = py+self.cellHeight
             end = self.checkOtherIntersections(app, px, py, 0, 0)
-        return (px, py, end[1], end[2])
+        return (px, py, end[1], self.spriteInSightMidCheck)
         # return end[1]
         # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="orange")        
     def horizontalUpRay(self, app, angle):
+        self.spriteInSightMidCheck = False
         end = (False, 0)
         #1.2*app.margin is a trivial fix to a bug that exists without the
         #Revisit here if future bugs.
@@ -195,12 +200,12 @@ class Raycaster:
             px = px+Xa
             py = py-self.cellHeight
             end = self.checkOtherIntersections(app, px, py, -1, 0)
-        return (px, py, end[1], end[2])
+        return (px, py, end[1], self.spriteInSightMidCheck)
         # return end[1]
         # canvas.create_oval(px-5,py-5,px+5,py+5,fill='green')
         # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="orange")        
     def redraw(self, app, canvas):
-        pass
+        self.spriteInSight = False
         self.drawMap(app, canvas)
         # self.getDists(app, canvas)
         # print(app.player.angle)
@@ -208,7 +213,8 @@ class Raycaster:
         # self.getRay(app, app.player.angle, canvas)
 
     def timerFired(self, app):
+        # print(self.spriteInSight)
         # app.checkedCells = set()
         # self.testFunc(app)
-        app.enemyIsVisible = False
+        # app.enemyIsVisible = False
         app.enemyIsVisible = self.spriteInSight
