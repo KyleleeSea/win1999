@@ -60,3 +60,12 @@ def drawCollision(app, canvas):
     if app.collisionCounter > 0:
         canvas.create_image(app.width//2, app.height//2, 
             image=ImageTk.PhotoImage(app.collisionImage))
+
+def checkGameWin(app):
+    app.currentWinInterval += 1
+    if app.currentWinInterval >= app.winIntervals:
+        app.mode = 'win'
+    
+def displayTimeLeft(app, canvas):
+    canvas.create_text(app.width//2, 50, text=f'{app.timeRemaining}',
+        fill='white', font='Helvetica 26')

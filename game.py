@@ -8,6 +8,7 @@ from enemy import *
 from playerShadow import *
 from raycaster import *
 from death import *
+from win import *
 
 class Game:
     def __init__(self):
@@ -45,9 +46,18 @@ class Game:
         app.collisionImage = app.loadImage('./assets/bonziLooking.png')
         app.death = Death(app)
 
+        secondsToWin = 5*60
+        msToWin = secondsToWin*1000
+        app.winIntervals = msToWin//app.timerDelay
+        app.currentWinInterval = 0
+        app.timeRemaining = (secondsToWin-
+        ((app.currentWinInterval)//1000)*app.timerDelay)
+        app.win = Win(app)
+
     def timerFired(self, app):
         # in backgroundLogic
         checkCollision(app)
+        checkGameWin(app)
         app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
 
@@ -66,6 +76,7 @@ class Game:
         app.enemy.redraw(app, canvas)
         # in backgroundLogic
         drawCollision(app, canvas)
+        displayTimeLeft(app, canvas)
 
     def appStopped(self, app):
         app.backgroundSound.appStopped(app)

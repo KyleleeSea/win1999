@@ -30,6 +30,14 @@ def death_redrawAll(app, canvas):
 def death_keyPressed(app, event):
     app.death.keyPressed(app, event)
 
+# Win screen
+# app.win initialized in game
+def win_redrawAll(app, canvas):
+    app.win.redraw(app, canvas)
+
+def win_keyPressed(app, event):
+    app.win.keyPressed(app, event)
+    
 # Game screen
 def game_timerFired(app):
     app.game.timerFired(app)
