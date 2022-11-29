@@ -22,8 +22,6 @@ class PlayerShadow:
         self.currentIntervalAdd += 1
         self.currentIntervalRemove += 1
         if self.currentIntervalAdd >= self.AddIntervalsToWait:
-            # print(self.allVisited)
-            # print(self.shadow)
             self.currentIntervalAdd = 0
             # Check allVisited has cells 
             if len(self.allVisited) >= 3:
@@ -34,6 +32,4 @@ class PlayerShadow:
             self.currentIntervalRemove = 0
 
             if len(self.shadow) >= 1:
-                # print(self.allVisited)
-                # print(self.shadow)
                 self.shadow.pop(0)

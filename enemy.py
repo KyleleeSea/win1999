@@ -23,16 +23,16 @@ class Enemy:
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
-        self.wanderSpeed = (app.player.moveVel)*5
-        self.huntSpeed = (app.player.moveVel)*4
-        self.followSpeed = (app.player.moveVel)*2.5
+        self.wanderSpeed = (app.player.moveVel)*6
+        self.huntSpeed = (app.player.moveVel)*5
+        self.followSpeed = (app.player.moveVel)*3.5
         # enemySize probably not needed after sprite animated
         self.enemySize = app.player.playerSize
         self.collisionDist = 15
 
         # Timer logic for follow
         # only change secondsToWait
-        secondsToFollow = 20
+        secondsToFollow = 30
         msToFollow = secondsToFollow*1000
         self.followIntervals = msToFollow//app.timerDelay
         self.currentInterval = 0
@@ -57,19 +57,15 @@ class Enemy:
     def wander(self, app):
         print('now wandering')
         if self.checkStraightLine(app):
-            # print('found')
             self.visited = set()
             self.movingBack = []
             self.state = 'following'
 
         huntTuple = self.huntingRangeCheck(app)
         if huntTuple != None:
-            # print('smelled player')
             self.changeVelHunt(huntTuple[1], huntTuple[0])
             self.state = 'startHunting'
         else:
-            # print('now wandering')
-
             moves = [(1,0), (-1, 0), (0, 1), (0, -1)]
             # Optimally move to open, non visited cell
             for move in moves:
@@ -85,8 +81,6 @@ class Enemy:
             # Remove latest so enemy doesn't stay stationary
             # Check if at least two
             if len(self.movingBack) >= 2:
-                # print('moving back')
-                # print(self.movingBack)
                 self.movingBack.pop()
                 # Move back to last cell 
                 lastCell = self.movingBack[-1]
@@ -112,7 +106,6 @@ class Enemy:
 
     def hunt(self, app):
         if self.checkStraightLine(app):
-            # print('found')
             self.state = 'following'
         # Check shadow exists 
         if len(app.playerShadow.shadow) == 0:
@@ -120,10 +113,7 @@ class Enemy:
             return
         else:
             # Find place of current cell in shadow
-            # print(f'row, col: {self.row}, {self.col}')
-            # print(f'playerShadow: {app.playerShadow.shadow}')
             if (self.row, self.col) not in app.playerShadow.shadow:
-                # print('row and col not found')
                 # Reseting shadow here may cause bugs. Come back.
                 app.playerShadow.shadow = []
                 self.state = 'wandering'
@@ -132,7 +122,6 @@ class Enemy:
             currShadowIndex = app.playerShadow.shadow.index((self.row, self.col))
 
             if len(app.playerShadow.shadow) <= currShadowIndex+1:
-                # print('doesnt have a following cell')
                 # Reseting shadow here may cause bugs. Come back.
                 app.playerShadow.shadow = []
                 self.state = 'wandering'
@@ -149,18 +138,13 @@ class Enemy:
 # https://www.youtube.com/watch?v=-L-WgKMFuhE
     def follow(self, app):
         if self.currentInterval >= self.followIntervals:
-            # print('time up')
             self.currentInterval = 0
             self.state = 'wandering'
         
-        if (self.row, self.col) == (app.player.row, app.player.col):
-            self.changeVelFollow(0, 0)
-        else:
-            moveTowardRow, moveTowardCol = shortestPath((self.row, self.col), app, 
-            (app.player.row, app.player.col))[-1]
-            print(moveTowardRow, moveTowardCol)
+        if (self.row, self.col) != (app.player.row, app.player.col):
+            moveTowardRow, moveTowardCol = shortestPath((self.row, self.col), 
+            app, (app.player.row, app.player.col))[-1]
             moveRow, moveCol = (moveTowardRow-self.row, moveTowardCol-self.col)
-            print(moveRow, moveCol)
             self.changeVelFollow(moveCol, moveRow)
 
 # Action Helpers
@@ -186,7 +170,8 @@ class Enemy:
     def huntingRangeCheck(self, app):
         moves = [(0,1), (0, -1), (1,0), (-1, 0)]
         for move in moves:
-            if (self.row + move[0], self.col + move[1]) in app.playerShadow.shadow:
+            if ((self.row + move[0], self.col + move[1]) in 
+            app.playerShadow.shadow):
                 return move
         return None
 
@@ -215,7 +200,6 @@ class Enemy:
         return False
 
     def move(self):
-        # Might need to add a legality check here 
         self.xPos += self.xVel
         self.yPos += self.yVel
 
@@ -237,7 +221,6 @@ class Enemy:
         self.updateRowCol(app)
 
         if self.state == 'following':
-            # print(self.currentInterval, self.followIntervals)
             self.currentInterval += 1
 
     def changeState(self, app):
@@ -252,6 +235,6 @@ class Enemy:
 
 # View
     def redraw(self, app, canvas):
-        (x0, y0, x1, y1) = (self.xPos - self.enemySize, self.yPos - self.enemySize,
-        self.xPos + self.enemySize, self.yPos + self.enemySize)
+        (x0, y0, x1, y1) = (self.xPos - self.enemySize, self.yPos - 
+        self.enemySize, self.xPos + self.enemySize, self.yPos + self.enemySize)
         canvas.create_oval(x0//7, y0//7, x1//7, y1//7, fill='orange')

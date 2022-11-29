@@ -16,16 +16,13 @@ class Raycaster:
         self.FOV = 60
         self.playerHeight = app.wallHeight/2
 
-        self.numRays = 320
+        self.numRays = 500
         self.angleBetweenRays = self.FOV/self.numRays
 
         self.baseWallColor = (255, 107, 107)
         self.baseSkyAndGroundColor = rgbString(69, 69, 69)
-        # self.skyAndGroundColor = rgbString(255, 255, 255)
-        # self.wallColor = rgbString(255, 107, 107)
 
     def drawMap(self, app, canvas):
-        # print(self.cellWidth, self.cellHeight)
         heightsWithColors = self.distsToHeights(app, canvas)
         planeWidth = app.width
         planeHeight = app.height
@@ -67,7 +64,6 @@ class Raycaster:
             projHeight = (app.wallHeight/dist['dist'])*app.distToPlane
             projHeightsWithColors.append({'projHeight': projHeight,
             'wallColor': dist['wallColor']})
-            # projectedHeights.append(projHeight)
         return projHeightsWithColors
 
     def getDists(self, app, canvas):
@@ -92,11 +88,8 @@ class Raycaster:
             distVer = self.verticalLeftRay(app, angle, canvas)
         if distHor[2] < distVer[2]:
             return {'dist': distHor[2], 'wallColor': distHor[3]}
-            # canvas.create_line(app.player.xPos, app.player.yPos, distHor[0], distHor[1], fill="green")        
         else:
             return {'dist': distVer[2], 'wallColor': distVer[3]}
-            # return {distVer[2]}
-            # canvas.create_line(app.player.xPos, app.player.yPos, distVer[0], distVer[1], fill="orange")        
 
 # rAdj and cAdj needed because intersection checks top most cell, causing
 # errors in cases Vertical Left and Horizontal up. 
@@ -145,7 +138,6 @@ class Raycaster:
                 divisor = 1
             elif divisor > 9:
                 divisor = 9
-        # print(divisor)
 
             wallColor = []
             for part in self.baseWallColor:
@@ -169,18 +161,12 @@ class Raycaster:
             py = py-Ya
             end = self.checkOtherIntersections(app, px, py, 0, 0)
 
-        # print(getDistance(px, py, app.enemy.xPos, app.enemy.yPos))
         color = self.wallShadeFormula(px, py, app)
         return (px, py, end[1], color)
-        # return end[1]
-        # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="green")        
 
     def verticalLeftRay(self, app, angle, canvas):
         end = (False, 0)
-        #3.5*app.margin is a trivial fix to a bug that exists without the
-        #3.5* multiplier. Revisit here if future bugs.
         px = self.cellWidth*(app.player.col)
-        # print(cellWidth)
         py = (app.player.yPos - 
         math.tan(math.radians(angle-90))*(px-app.player.xPos))
 
@@ -195,13 +181,9 @@ class Raycaster:
 
         color = self.wallShadeFormula(px, py, app)
         return (px, py, end[1], color)
-        # print(end[1])
-        # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="green")        
 
     def horizontalDownRay(self, app, angle, canvas):
         end = (False, 0)
-        # Horizontal
-        # First intersection
         py = self.cellHeight*(app.player.row + 1)
         #0.0001 added to avoid div by 0 error
         px = (app.player.xPos + 
@@ -219,17 +201,10 @@ class Raycaster:
 
         color = self.wallShadeFormula(px, py, app)
         return (px, py, end[1], color)  
-         # return end[1]
-        # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="orange")        
 
     def horizontalUpRay(self, app, angle, canvas):
         end = (False, 0)
-
-        #1.2*app.margin is a trivial fix to a bug that exists without the
-        #Revisit here if future bugs.
-        # print(f'row:{app.player.row}')
         py = self.cellHeight*(app.player.row)
-        #0.0001 added to avoid div by 0 error
         px = (app.player.xPos + 
         (app.player.yPos - py)/(math.tan(math.radians(angle-90))
         +0.0001))
@@ -246,10 +221,6 @@ class Raycaster:
 
         color = self.wallShadeFormula(px, py, app)
         return (px, py, end[1], color)
-        # canvas.create_oval(px-5,py-5,px+5,py+5,fill='green')
-        # canvas.create_line(app.player.xPos, app.player.yPos, px, py, fill="orange")        
 
     def redraw(self, app, canvas):
         self.drawMap(app, canvas)
-        # self.getDists(app, canvas)
-        # print(app.player.angle)

@@ -7,7 +7,6 @@
 # in Hack112. https://github.com/KyleleeSea/slashnbash
 
 from cmu_112_graphics import *
-from game import *
 
 class Death:
     def __init__(self, app):
@@ -20,25 +19,6 @@ class Death:
     def keyPressed(self, app, event):
         if event.key == 'f':
             app.mode = 'start'
-
-
-class StartScreen:
-    def __init__(self, app):
-        self.startImage = app.loadImage('./assets/startScreen.png')
-    
-    def redraw(self, app, canvas):
-            canvas.create_image(app.width//2, app.height//2, 
-            image=ImageTk.PhotoImage(self.startImage))
-        
-    def keyPressed(self, app, event):
-        if event.key == 'w':
-            app.game = Game()
-            app.game.startGame(app)
-            app.mode = 'game'
-        if event.key == 's':
-            app.instructions = Instructions(app)
-            app.mode = 'instructions'
-
 
 class Instructions:
     def __init__(self, app):
@@ -61,5 +41,5 @@ class Win:
             image=ImageTk.PhotoImage(self.winImage))
         
     def keyPressed(self, app, event):
-        if event.key == 'w':
+        if event.key == 's':
             app.mode = 'start'

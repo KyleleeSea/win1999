@@ -20,7 +20,7 @@ class Game:
         app.wallHeight = (1/6)*app.height
         app.distToPlane = (app.width/2)*math.tan(math.radians(30))
 
-        app.maze = Maze(20)
+        app.maze = Maze(15)
         app.level = 1
         exitBlockProportion = 0.6
         app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)
@@ -36,15 +36,15 @@ class Game:
 
         app.raycaster = Raycaster(app, app.maze)
 
-        # Player can be in same cell for up to 1.5 seconds before dying
-        secondsToDie = 1.5
+        # Player can be in same cell for up to 1 second before dying
+        secondsToDie = 1
         mstoDie = secondsToDie*1000
         app.dieIntervals = mstoDie//app.timerDelay
         app.collisionCounter = 0
         app.collisionImage = app.loadImage('./assets/bonziLooking.png')
         app.death = Death(app)
 
-        app.secondsToWin = 5*60
+        app.secondsToWin = 2*60
         msToWin = app.secondsToWin*1000
         app.winIntervals = msToWin//app.timerDelay
         app.currentWinInterval = 0
@@ -66,14 +66,15 @@ class Game:
 
     def redraw(self, app, canvas):
         app.raycaster.redraw(app, canvas)
-
-        app.maze.redraw(app, canvas)
+        displayTimeLeft(app, canvas)
+        
+        # Commented out 2d representation debugging code
+        # app.maze.redraw(app, canvas)
         # app.exitBlock.redraw(app, canvas)
-        app.player.redraw(app, canvas)
-        app.enemy.redraw(app, canvas)
+        # app.player.redraw(app, canvas)
+        # app.enemy.redraw(app, canvas)
         # in backgroundLogic
         # drawCollision(app, canvas)
-        displayTimeLeft(app, canvas)
 
     def appStopped(self, app):
         app.backgroundSound.appStopped(app)

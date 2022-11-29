@@ -8,7 +8,7 @@ def appStarted(app):
     app.start = StartScreen(app)
     app.shortestPath = []
     # app.game initialized upon starting in start screen
-  
+
 # Start screen 
 def start_redrawAll(app, canvas):
     app.start.redraw(app, canvas)
@@ -17,7 +17,6 @@ def start_keyPressed(app, event):
     app.start.keyPressed(app, event)
 
 # Instructions screen
-
 def instructions_redrawAll(app, canvas):
     app.instructions.redraw(app, canvas)
 
@@ -53,7 +52,7 @@ def game_keyPressed(app, event):
 def game_redrawAll(app, canvas):
     app.game.redraw(app, canvas)
 
-def game_appStopped(app):
+def appStopped(app):
     app.game.appStopped(app)
 
 runApp(width=1500, height=900)

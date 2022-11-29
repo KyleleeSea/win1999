@@ -12,10 +12,8 @@ class Player:
         self.maze = maze.maze
         self.exitBlock = maze.exitBlock
         self.angle = 90
-        # self.angleVel = 10
         self.moveVel = app.cellWidth//25
-        #Make player slower by increasing denominator of moveVel for actual
-        # game. Maybe 150?
+        #Make player slower by increasing denominator of moveVel 
         (startX0, startY0, startX1, startY1) = getCellBounds(1, 1, self.maze, 
         app)
         self.xPos = int((startX0 + startX1)//2)
@@ -24,7 +22,7 @@ class Player:
         self.col = 1
         self.lastRow = 1
         self.lastCol = 1
-        # playerSize temporary
+        # playerSize for 2d debugging representation
         self.playerSize = int(app.cellWidth//5)
 
     def adjustAngle(self, angleDiff):
@@ -44,9 +42,10 @@ class Player:
             self.yPos = newY
             self.row, self.col = getCell(app, newX, newY, self.maze)
             adjustBackgroundVolume(app)
-            if self.checkExit(self.exitBlock):
+            # Commented out next level functionality for MVP
+            # if self.checkExit(self.exitBlock):
                 #nextLevel from backgroundLogic.py
-                nextLevel(app)
+                # nextLevel(app)
         # Row col updating for shadow logic
         if self.row != self.lastRow or self.col != self.lastCol:
             # Account for starter value
@@ -58,7 +57,6 @@ class Player:
 
     def updateRowCol(self, app):
         self.row, self.col = getCell(app, self.xPos, self.yPos, self.maze)
-    
 
     def keyPressed(self, app, event):
         if event.key == 'w':
@@ -78,7 +76,8 @@ class Player:
         return False
 
     def redraw(self, app, canvas):
-        canvas.create_oval((self.xPos-self.playerSize)//7, (self.yPos-self.playerSize)//7,
+        canvas.create_oval((self.xPos-self.playerSize)//7, 
+        (self.yPos-self.playerSize)//7,
         (self.xPos + self.playerSize)//7, (self.yPos + self.playerSize)//7,
         fill='orange')
         # Temporary 2D debugging line that'll show angle facing
