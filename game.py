@@ -46,12 +46,12 @@ class Game:
         app.collisionImage = app.loadImage('./assets/bonziLooking.png')
         app.death = Death(app)
 
-        secondsToWin = 5*60
-        msToWin = secondsToWin*1000
+        app.secondsToWin = 0.5*60
+        msToWin = app.secondsToWin*1000
         app.winIntervals = msToWin//app.timerDelay
         app.currentWinInterval = 0
-        app.timeRemaining = (secondsToWin-
-        ((app.currentWinInterval)//1000)*app.timerDelay)
+        app.timeRemaining = (app.secondsToWin-
+        ((app.currentWinInterval)))
         app.win = Win(app)
 
     def timerFired(self, app):

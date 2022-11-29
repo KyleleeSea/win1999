@@ -63,9 +63,14 @@ def drawCollision(app, canvas):
 
 def checkGameWin(app):
     app.currentWinInterval += 1
+    app.timeRemaining = (app.secondsToWin-
+        ((app.currentWinInterval)))
+    print(app.currentWinInterval, app.winIntervals)
     if app.currentWinInterval >= app.winIntervals:
         app.mode = 'win'
     
 def displayTimeLeft(app, canvas):
-    canvas.create_text(app.width//2, 50, text=f'{app.timeRemaining}',
+    # print(app.timeRemaining)
+    canvas.create_text(app.width//2, 50, 
+    text=f'seconds to survive: {app.timeRemaining}',
         fill='white', font='Helvetica 26')
