@@ -3,6 +3,7 @@ from startScreen import *
 from instructions import *
 
 def appStarted(app):
+    app.timerDelay = 150
     app.mode = 'start'
     app.start = StartScreen(app)
     # app.game initialized upon starting in start screen

@@ -64,8 +64,7 @@ def drawCollision(app, canvas):
 def checkGameWin(app):
     app.currentWinInterval += 1
     app.timeRemaining = (app.secondsToWin-
-        ((app.currentWinInterval)))
-    print(app.currentWinInterval, app.winIntervals)
+        ((app.currentWinInterval*app.timerDelay)//1000))
     if app.currentWinInterval >= app.winIntervals:
         app.mode = 'win'
     

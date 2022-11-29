@@ -21,7 +21,6 @@ class Game:
         app.wallHeight = (1/6)*app.height
         app.distToPlane = (app.width/2)*math.tan(math.radians(30))
 
-        app.timerDelay = 150
         app.maze = Maze(20)
         app.level = 1
         exitBlockProportion = 0.6
@@ -39,19 +38,18 @@ class Game:
         app.raycaster = Raycaster(app, app.maze)
 
         # Player can be in same cell for up to 2 seconds before dying
-        secondsToDie = 1
+        secondsToDie = 2
         mstoDie = secondsToDie*1000
         app.dieIntervals = mstoDie//app.timerDelay
         app.collisionCounter = 0
         app.collisionImage = app.loadImage('./assets/bonziLooking.png')
         app.death = Death(app)
 
-        app.secondsToWin = 0.5*60
+        app.secondsToWin = 5*60
         msToWin = app.secondsToWin*1000
         app.winIntervals = msToWin//app.timerDelay
         app.currentWinInterval = 0
-        app.timeRemaining = (app.secondsToWin-
-        ((app.currentWinInterval)))
+        app.timeRemaining = app.secondsToWin
         app.win = Win(app)
 
     def timerFired(self, app):
@@ -75,7 +73,7 @@ class Game:
         app.player.redraw(app, canvas)
         app.enemy.redraw(app, canvas)
         # in backgroundLogic
-        drawCollision(app, canvas)
+        # drawCollision(app, canvas)
         displayTimeLeft(app, canvas)
 
     def appStopped(self, app):

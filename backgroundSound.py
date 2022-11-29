@@ -20,10 +20,10 @@ class backgroundSound:
 # Referencing the variable in main.py. If main.py background volume variable
 # changes, will need to adjust this function
 def adjustBackgroundVolume(app):
-    (exitX, exitY, playerX, playerY) = (app.exitBlock.xPos, 
-        app.exitBlock.yPos, app.player.xPos, app.player.yPos)
+    (enemyX, enemyY, playerX, playerY) = (app.enemy.xPos, 
+        app.enemy.yPos, app.player.xPos, app.player.yPos)
 
     backgroundVolume = app.backgroundSound.volumeFormula(app, 
-        getDistance(exitX, exitY, playerX, playerY))
+        getDistance(enemyX, enemyY, playerX, playerY))
 
     app.backgroundSound.sound.changeVolume(backgroundVolume)

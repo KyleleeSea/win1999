@@ -13,5 +13,5 @@ class Death:
             image=ImageTk.PhotoImage(self.deathImage))
         
     def keyPressed(self, app, event):
-        if event.key == 'w':
+        if event.key == 'f':
             app.mode = 'start'

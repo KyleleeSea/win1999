@@ -127,25 +127,31 @@ class Raycaster:
         if (row, col) == (app.enemy.row, app.enemy.col):
             self.baseSkyAndGroundColor = rgbString(0, 0, 0)
             return rgbString(0, 0, 0)
-        self.baseSkyAndGroundColor = rgbString(69, 69, 69)
+        else:
+            if ((app.player.row, app.player.col) == 
+            (app.enemy.row, app.enemy.col)):
+                self.baseSkyAndGroundColor = rgbString(0, 0, 0)
+            else:
+                self.baseSkyAndGroundColor = rgbString(69, 69, 69)
 
-        enemyToSliceDist = getDistance(px, py, app.enemy.xPos, app.enemy.yPos)
-        # Getting diagonal of one quadrant
-        quadrantX = (app.maze.size/2)*self.cellWidth
-        quadrantY = (app.maze.size/2)*self.cellHeight
-        maxDist = ((quadrantX**2 + quadrantY**2)**(1/2))
-        divisor = maxDist/enemyToSliceDist
-        if divisor < 1:
-            divisor = 1
-        elif divisor > 9:
-            divisor = 9
+            enemyToSliceDist = getDistance(px, py, app.enemy.xPos, 
+            app.enemy.yPos)
+            # Getting diagonal of one quadrant
+            quadrantX = (app.maze.size/2)*self.cellWidth
+            quadrantY = (app.maze.size/2)*self.cellHeight
+            maxDist = ((quadrantX**2 + quadrantY**2)**(1/2))
+            divisor = maxDist/enemyToSliceDist
+            if divisor < 1:
+                divisor = 1
+            elif divisor > 9:
+                divisor = 9
         # print(divisor)
 
-        wallColor = []
-        for part in self.baseWallColor:
-            wallColor.append(int(part/divisor))
-        wallColor = rgbString(wallColor[0], wallColor[1], wallColor[2])
-        return wallColor
+            wallColor = []
+            for part in self.baseWallColor:
+                wallColor.append(int(part/divisor))
+            wallColor = rgbString(wallColor[0], wallColor[1], wallColor[2])
+            return wallColor
 
     def verticalRightRay(self, app, angle, canvas):
     # end variable first arg: True or False condition. second arg: distance
