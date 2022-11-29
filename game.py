@@ -7,8 +7,7 @@ from backgroundLogic import *
 from enemy import *
 from playerShadow import *
 from raycaster import *
-from death import *
-from win import *
+from splashScreens import *
 
 class Game:
     def __init__(self):
@@ -37,8 +36,8 @@ class Game:
 
         app.raycaster = Raycaster(app, app.maze)
 
-        # Player can be in same cell for up to 2 seconds before dying
-        secondsToDie = 2
+        # Player can be in same cell for up to 1.5 seconds before dying
+        secondsToDie = 1.5
         mstoDie = secondsToDie*1000
         app.dieIntervals = mstoDie//app.timerDelay
         app.collisionCounter = 0

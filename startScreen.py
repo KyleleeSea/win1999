@@ -1,11 +1,13 @@
-# Splash screen image: https://ansimuz.itch.io/grunge-horror-environment
+# Splash screen images: https://ansimuz.itch.io/grunge-horror-environment
 # Splash screen font: https://fonts2u.com/pixel-nes.font
 # Splash screen implementation inspired by my previous work
 # in Hack112. https://github.com/KyleleeSea/slashnbash
 
+from cmu_112_graphics import *
 from game import *
-from instructions import *
 
+# Seperate file from other splash screens to avoid circular import
+# in game.py
 class StartScreen:
     def __init__(self, app):
         self.startImage = app.loadImage('./assets/startScreen.png')

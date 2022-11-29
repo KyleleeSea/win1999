@@ -13,7 +13,7 @@ class Player:
         self.exitBlock = maze.exitBlock
         self.angle = 90
         # self.angleVel = 10
-        self.moveVel = app.cellWidth//15
+        self.moveVel = app.cellWidth//25
         #Make player slower by increasing denominator of moveVel for actual
         # game. Maybe 150?
         (startX0, startY0, startX1, startY1) = getCellBounds(1, 1, self.maze, 

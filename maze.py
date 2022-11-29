@@ -150,7 +150,9 @@ def drawOpen(app, canvas, row, col, maze):
     # if row == app.player.lastRow and col == app.player.lastCol:
     #     canvas.create_rectangle(x0//4, y0//4, x1//4, y1//4, fill='green', outline='black')
 
-    if (row, col) in app.playerShadow.shadow:
+    if (row, col) in app.shortestPath:
+        canvas.create_rectangle(x0//7, y0//7, x1//7, y1//7, fill='green', outline='black')
+    elif (row, col) in app.playerShadow.shadow:
         canvas.create_rectangle(x0//7, y0//7, x1//7, y1//7, fill='yellow', outline='black')
     else:
         canvas.create_rectangle(x0//7, y0//7, x1//7, y1//7, fill='white', outline='black')

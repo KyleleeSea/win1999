@@ -1,11 +1,12 @@
 from game import *
+from splashScreens import *
 from startScreen import *
-from instructions import *
 
 def appStarted(app):
     app.timerDelay = 150
     app.mode = 'start'
     app.start = StartScreen(app)
+    app.shortestPath = []
     # app.game initialized upon starting in start screen
   
 # Start screen 
@@ -18,10 +19,10 @@ def start_keyPressed(app, event):
 # Instructions screen
 
 def instructions_redrawAll(app, canvas):
-    app.death.redraw(app, canvas)
+    app.instructions.redraw(app, canvas)
 
 def instructions_keyPressed(app, event):
-    app.death.keyPressed(app, event)
+    app.instructions.keyPressed(app, event)
 
 # Death screen
 # app.death initialized in game
