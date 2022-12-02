@@ -224,3 +224,6 @@ class Raycaster:
 
     def redraw(self, app, canvas):
         self.drawMap(app, canvas)
+
+        for sprite in app.sprites:
+            sprite.redraw(app, canvas)

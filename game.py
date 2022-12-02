@@ -8,6 +8,7 @@ from enemy import *
 from playerShadow import *
 from raycaster import *
 from splashScreens import *
+from sprite import *
 
 class Game:
     def __init__(self):
@@ -20,7 +21,7 @@ class Game:
         app.wallHeight = (1/6)*app.height
         app.distToPlane = (app.width/2)*math.tan(math.radians(30))
 
-        app.maze = Maze(15)
+        app.maze = Maze(5) #prev 15
         app.level = 1
         exitBlockProportion = 0.6
         app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)
@@ -32,7 +33,10 @@ class Game:
         #Init audio
         pygame.mixer.init()
         # https://obsydianx.itch.io/horror-sfx-volume-1
-        app.backgroundSound = backgroundSound('./assets/backgroundAudio.mp3')    
+        app.backgroundSound = backgroundSound('./assets/backgroundAudio.mp3') 
+
+        #Init sprites
+        app.sprites = [Sprite('./assets/treeSprite64.png', 64, app)]   
 
         app.raycaster = Raycaster(app, app.maze)
 
@@ -53,9 +57,9 @@ class Game:
 
     def timerFired(self, app):
         # in backgroundLogic
-        checkCollision(app)
+        # checkCollision(app)
         checkGameWin(app)
-        app.enemy.timerFired(app)
+        # app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
 
     def mouseMoved(self, app, event):
@@ -69,9 +73,9 @@ class Game:
         displayTimeLeft(app, canvas)
         
         # Commented out 2d representation debugging code
-        # app.maze.redraw(app, canvas)
+        app.maze.redraw(app, canvas)
         # app.exitBlock.redraw(app, canvas)
-        # app.player.redraw(app, canvas)
+        app.player.redraw(app, canvas)
         # app.enemy.redraw(app, canvas)
         # in backgroundLogic
         # drawCollision(app, canvas)
