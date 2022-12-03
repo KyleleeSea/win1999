@@ -58,11 +58,12 @@ class Raycaster:
         allElements = wallsList + spritesList
 
         # sort by distance
-        allElements = sorted(allElements, key=itemgetter('dist'), reverse=True)
+        # allElements = sorted(allElements, key=itemgetter('dist'), reverse=True)
 
         for element in allElements:
             if element['type'] == 'wall':
-                (x0, x1) = (currX, currX+xAdj)
+                x0 = element['xNum']*xAdj
+                x1 = x0 + xAdj
                 self.drawWall(app, canvas, x0, x1, cy, element['projHeight'],
             element['wallColor'])
                 self.drawSky(app, canvas, x0, x1, cy, element['projHeight'])
@@ -108,7 +109,8 @@ class Raycaster:
             projHeight = (app.wallHeight/distWithColor['dist'])*app.distToPlane
             # Saving dist in dictionary to use in depth buffer
             sliceDict = {'dist': distWithColor['dist'], 'type': 'wall', 
-            'projHeight': projHeight, 'wallColor': distWithColor['wallColor']}
+            'projHeight': projHeight, 'wallColor': distWithColor['wallColor'],
+            'xNum': distWithColor['xNum']}
 
             slices.append(sliceDict)
         return slices
@@ -121,7 +123,10 @@ class Raycaster:
             # if statement here might be wrong. come back if bugs.
             if angle > 360:
                 angle = 0
-            distsWithColor.append(self.getRay(app, angle, canvas))
+            ray = self.getRay(app, angle, canvas)
+            # Need to get xNum to draw x position correctly with depth buffer
+            ray['xNum'] = i
+            distsWithColor.append(ray)
         return distsWithColor
 
     def getRay(self, app, angle, canvas):
