@@ -38,7 +38,7 @@ class Raycaster:
         for sprite in app.sprites:
             screenX, screenY = sprite.getSpriteCoords(app)
             # Only including in list if in FOV for efficiency
-            if sprite.inFOV(screenX,app):
+            if sprite.inFOV(screenX,app) and sprite.notBehindWall(app):
                 dist = getDistance(app.player.xPos, app.player.yPos,
                 sprite.xPos, sprite.yPos)
                 spriteDict = {'dist': dist, 'type': 'sprite', 'obj': sprite}

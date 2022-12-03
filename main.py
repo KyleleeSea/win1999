@@ -55,4 +55,4 @@ def game_redrawAll(app, canvas):
 def appStopped(app):
     app.game.appStopped(app)
 
-runApp(width=1500, height=900)
+runApp(width=1500, height=700)
