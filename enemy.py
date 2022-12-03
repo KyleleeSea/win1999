@@ -10,6 +10,7 @@ import random
 from helpers import *
 from backgroundLogic import *
 from shortestPath import *
+from sprite import *
 
 class Enemy:
     def __init__(self, app, maze):
@@ -19,13 +20,13 @@ class Enemy:
         self.lastCol = 1
         self.xVel = 0
         self.yVel = 0
-        self.state = 'following'
+        self.state = 'wandering'
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
-        self.wanderSpeed = (app.player.moveVel)*6
-        self.huntSpeed = (app.player.moveVel)*5
-        self.followSpeed = (app.player.moveVel)*3.5
+        self.wanderSpeed = (app.player.moveVel)*3
+        self.huntSpeed = (app.player.moveVel)*3
+        self.followSpeed = (app.player.moveVel)*2
         # enemySize probably not needed after sprite animated
         self.enemySize = app.player.playerSize
         self.collisionDist = 15
@@ -36,6 +37,52 @@ class Enemy:
         msToFollow = secondsToFollow*1000
         self.followIntervals = msToFollow//app.timerDelay
         self.currentInterval = 0
+
+        # Implementation inspired by my previous work for Hack112
+        # https://github.com/KyleleeSea/slashnbash/blob/main/earth_enemy.py
+        # Load spritesheets
+        spritesheet = app.loadImage('./assets/bonziBuddy.png')
+        startX = 0
+        xWidth = 60.23
+        self.animationCounter = 0
+
+
+        self.wanderAnim = []
+        (startY, endY) = getYs(5)
+        for i in range(7):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.wanderAnim.append(animation)
+        for i in range(10,14):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.wanderAnim.append(animation)
+
+        self.huntAnim = []
+        (startY, endY) = getYs(14)
+        for i in range(8,17):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.huntAnim.append(animation)
+        (startY, endY) = getYs(15)
+        for i in range(8):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.huntAnim.append(animation)
+
+        self.followAnim = []
+        (startY, endY) = getYs(9)
+        for i in range(2,11):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.followAnim.append(animation)
+        for i in range(11,3,-1):
+            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+            endY, spritesheet, app)
+            self.followAnim.append(animation)
+
+        self.spriteVisual = Sprite(self.wanderAnim[0], 48, self.row, self.col,
+        app)
 
 # Controller 
     def spawn(self, app):
@@ -202,15 +249,38 @@ class Enemy:
     def move(self):
         self.xPos += self.xVel
         self.yPos += self.yVel
+        self.spriteVisual.xPos += self.xVel
+        self.spriteVisual.yPos += self.yVel
 
     def updateRowCol(self, app):
         self.row, self.col = getCell(app, self.xPos, self.yPos, self.maze.maze)
+        self.spriteVisual.row = self.row
+        self.spriteVisual.col = self.col
     
     def rushCondition(self):
         pass
 
 # Action logic
-    def timerFired(self, app):
+    def animationUpdates(self, app):
+        if self.state == 'wandering':
+            self.animationCounter += 1
+            if self.animationCounter >= len(self.wanderAnim):
+                self.animationCounter = 0
+            self.spriteVisual.image = self.wanderAnim[self.animationCounter]
+        elif self.state == 'hunting' or self.state == 'startHunting':
+            self.animationCounter += 1 
+
+            if self.animationCounter >= len(self.huntAnim):
+                self.animationCounter = 0
+            self.spriteVisual.image = self.huntAnim[self.animationCounter]
+        elif self.state == 'following':
+            self.animationCounter += 1 
+
+            if self.animationCounter >= len(self.followAnim):
+                self.animationCounter = 0
+            self.spriteVisual.image = self.followAnim[self.animationCounter]
+
+    def movementUpdates(self, app):
         # Only update state if in new row or new col
         if self.row != self.lastRow or self.col != self.lastCol:
             self.changeState(app)
@@ -223,6 +293,11 @@ class Enemy:
         if self.state == 'following':
             self.currentInterval += 1
 
+    def timerFired(self, app):
+        self.animationUpdates(app)
+        self.movementUpdates(app)
+
+
     def changeState(self, app):
         if self.state == 'wandering':
             self.wander(app)
@@ -233,8 +308,9 @@ class Enemy:
         elif self.state == 'following':
             self.follow(app)
 
-# View
+# View 2D (visual representation for 3D)
     def redraw(self, app, canvas):
         (x0, y0, x1, y1) = (self.xPos - self.enemySize, self.yPos - 
         self.enemySize, self.xPos + self.enemySize, self.yPos + self.enemySize)
         canvas.create_oval(x0//7, y0//7, x1//7, y1//7, fill='orange')
+

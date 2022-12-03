@@ -7,7 +7,12 @@ from raycaster import *
 
 class Sprite:
     def __init__(self, path, baseSize, row, col, app):
-        self.image = app.loadImage(path)
+        if type(path) == str:
+            self.image = app.loadImage(path)
+        # for case enemy
+        else:
+            self.image = path
+
         self.baseSize = baseSize
 
         bounds = getCellBounds(row, col, app.maze.maze, app)
@@ -52,7 +57,8 @@ class Sprite:
         if xPos >= 0 and xPos <= app.width:
             return True
         return False
-    
+        
+    # this is broken
     def notBehindWall(self, app):
         if app.player.xPos >= self.xPos:
             xLen = app.player.xPos - self.xPos
@@ -78,8 +84,8 @@ class Sprite:
     def redraw(self, app, canvas):
         (x, y) = self.getSpriteCoords(app)
         sprite3DSize = self.getSpriteDims(app)/self.baseSize
-        print(sprite3DSize)
-        if sprite3DSize < 40:
+        # print(sprite3DSize)
+        if sprite3DSize < 40: # try lower #s later 
             image3D = app.scaleImage(self.image, sprite3DSize)
             canvas.create_image(x, 
             y, image=ImageTk.PhotoImage(image3D))

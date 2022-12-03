@@ -1,6 +1,9 @@
 from game import *
 from splashScreens import *
 from startScreen import *
+import sys
+#https://www.geeksforgeeks.org/python-handling-recursion-limit/
+sys.setrecursionlimit(10**6)
 
 def appStarted(app):
     app.timerDelay = 150

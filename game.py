@@ -1,3 +1,5 @@
+# https://hello-tazzina.itch.io/greenwoods-ii Sprites
+
 from cmu_112_graphics import *
 from maze import *
 from exitBlock import *
@@ -13,27 +15,26 @@ import random
 
 class Game:
     def __init__(self):
+        # https://hello-tazzina.itch.io/greenwoods-ii
         self.bareTreeSprites = []
-        for i in range(1,2):
+        for i in range(1,4):
             imgPath =  f'./assets/bareTree{i}Sprite.png'
             self.bareTreeSprites.append(imgPath)
 
-        self.treeSprites = ['./assets/treeSprite.png']
-        # for i in range(2,16):
-        #     imgPath =  f'./assets/tree{i}Sprite.png'
-        #     self.bareTreeSprites.append(imgPath)
+        self.treeSprites = []
+        for i in range(1,7):
+            imgPath =  f'./assets/tree{i}Sprite.png'
+            self.treeSprites.append(imgPath)
         
-        self.otherSprites = ['./assets/bathtubSprite.png']
-        # './assets/statueSprite.png', './assets/cauldronJarsSprite.png',
-        # './assets/closetSprite.png', './assets/clothesSprite.png',
-        # './assets/flagSprite.png', './assets/runeSprite.png',
-        # './assets/scarecrowSprite.png', './assets/shelfSprite.png',
-        # './assets/shelfWithBooksSprite.png', './assets/shopSprite.png',
-        # './assets/targetSprite.png', './assets/wellSprite.png',
-        # './assets/wheelBarrowSprite.png']
+        self.otherSprites = ['./assets/statueSprite.png', 
+        './assets/cauldronJarsSprite.png', './assets/closetSprite.png', 
+        './assets/clothesSprite.png', './assets/runeSprite.png',
+        './assets/scarecrowSprite.png', './assets/shelfSprite.png',
+         './assets/shopSprite.png', './assets/wellSprite.png',
+        './assets/wheelBarrowSprite.png']
 
     def initSprites(self, app):
-        spritesList = []
+        spritesList = [app.enemy.spriteVisual]
         openCells = app.maze.getOpenCells()
         openCells.remove((1,1))
         random.shuffle(openCells)
@@ -51,7 +52,7 @@ class Game:
             # else choose other
             else:
                 ind = random.randint(0, len(self.otherSprites) - 1)
-                toAppend = Sprite(self.otherSprites[ind], 32, row, col, app)      
+                toAppend = Sprite(self.otherSprites[ind], 16, row, col, app)      
             spritesList.append(toAppend)
         return spritesList
 
@@ -100,7 +101,7 @@ class Game:
         # in backgroundLogic
         # checkCollision(app)
         checkGameWin(app)
-        # app.enemy.timerFired(app)
+        app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
 
     def mouseMoved(self, app, event):
@@ -117,7 +118,7 @@ class Game:
         app.maze.redraw(app, canvas)
         # app.exitBlock.redraw(app, canvas)
         app.player.redraw(app, canvas)
-        # app.enemy.redraw(app, canvas)
+        app.enemy.redraw(app, canvas)
         # in backgroundLogic
         # drawCollision(app, canvas)
 
