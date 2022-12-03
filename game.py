@@ -21,7 +21,7 @@ class Game:
         app.wallHeight = (1/6)*app.height
         app.distToPlane = (app.width/2)*math.tan(math.radians(30))
 
-        app.maze = Maze(5) #prev 15
+        app.maze = Maze(10) #prev 15
         app.level = 1
         exitBlockProportion = 0.6
         app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)

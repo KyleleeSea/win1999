@@ -5,9 +5,16 @@
 # naively stepping
 # Shoutout Stephen Mao, discussed how to calculate height of a
 # triangle. stmao@andrew.cmu.edu
+
+# Spritecasting inspiration
+# https://www.youtube.com/watch?v=CcNCgmVJiBY
+# https://www.youtube.com/watch?v=Q4cDDNCXfHA 
+# https://www.youtube.com/watch?v=kyI-Ken7aAk
+
 from cmu_112_graphics import *
 from helpers import *
 import math
+from operator import itemgetter
 
 class Raycaster:
     def __init__(self, app, maze):
@@ -22,34 +29,58 @@ class Raycaster:
         self.baseWallColor = (255, 107, 107)
         self.baseSkyAndGroundColor = rgbString(69, 69, 69)
 
+# Creating dictionary of sprite with dist from player for use in drawing
+# priority to hide behind walls
+# https://www.youtube.com/watch?v=CcNCgmVJiBY
+# https://www.youtube.com/watch?v=Q4cDDNCXfHA 
+# https://www.youtube.com/watch?v=kyI-Ken7aAk
     def spriteCaster(self, app):
         spriteList = []
         for sprite in app.sprites:
             screenX, screenY = sprite.getSpriteCoords(app)
+            # Only including in list if in FOV for efficiency
             if sprite.inFOV(screenX, app):
                 dist = getDistance(app.player.xPos, app.player.yPos,
                 sprite.xPos, sprite.yPos)
-                spriteDict = {'dist': dist, 'type': 'sprite', 'obj': sprite,
-                'screenX': screenX, 'screenY': screenY}
+                spriteDict = {'dist': dist, 'type': 'sprite', 'obj': sprite}
                 spriteList.append(spriteDict)
         return spriteList
 
-    def drawMap(self, app, canvas):
-        heightsWithColors = self.distsToHeights(app, canvas)
+    def drawScene(self, app, canvas):
         planeWidth = app.width
         planeHeight = app.height
         cy = planeHeight/2
         currX = 0
         xAdj = planeWidth/self.numRays
 
-        for wallSlice in heightsWithColors:
-            (x0, x1) = (currX, currX+xAdj)
-            self.drawWall(app, canvas, x0, x1, cy, wallSlice['projHeight'],
-            wallSlice['wallColor'])
-            self.drawSky(app, canvas, x0, x1, cy, wallSlice['projHeight'])
-            self.drawGround(app, canvas, x0, x1, cy, wallSlice['projHeight'])
+        wallsList = self.createSlices(app, canvas)
+        spritesList = self.spriteCaster(app)
+        allElements = wallsList + spritesList
 
-            currX = x1
+        # sort by distance
+        allElements = sorted(allElements, key=itemgetter('dist'), reverse=True)
+
+        for element in allElements:
+            if element['type'] == 'wall':
+                (x0, x1) = (currX, currX+xAdj)
+                self.drawWall(app, canvas, x0, x1, cy, element['projHeight'],
+            element['wallColor'])
+                self.drawSky(app, canvas, x0, x1, cy, element['projHeight'])
+                self.drawGround(app, canvas, x0, x1, cy, element['projHeight'])
+
+                currX = x1
+
+            elif element['type'] == 'sprite':
+                element['obj'].redraw(app, canvas)
+
+        # for wallSlice in heightsWithColors:
+        #     (x0, x1) = (currX, currX+xAdj)
+        #     self.drawWall(app, canvas, x0, x1, cy, wallSlice['projHeight'],
+        #     wallSlice['wallColor'])
+        #     self.drawSky(app, canvas, x0, x1, cy, wallSlice['projHeight'])
+        #     self.drawGround(app, canvas, x0, x1, cy, wallSlice['projHeight'])
+
+        #     currX = x1
 
     def drawWall(self, app, canvas, x0, x1, cy, height, color): 
         (y0, y1) = (cy-(height/2),cy+(height/2))
@@ -67,27 +98,31 @@ class Raycaster:
         canvas.create_rectangle(x0,y0,x1,y1,fill=self.baseSkyAndGroundColor, 
         outline=self.baseSkyAndGroundColor)
 
-    def distsToHeights(self, app, canvas):
-        dists = self.getDists(app, canvas)
-        projHeightsWithColors = []
+    def createSlices(self, app, canvas):
+        distsWithColors = self.getDists(app, canvas)
+        slices = []
         distToPlane = (app.width/2)*math.tan(math.radians(30))
 
-        for dist in dists:
-            projHeight = (app.wallHeight/dist['dist'])*app.distToPlane
-            projHeightsWithColors.append({'projHeight': projHeight,
-            'wallColor': dist['wallColor']})
-        return projHeightsWithColors
+        for distWithColor in distsWithColors:
+            # Get projection height
+            projHeight = (app.wallHeight/distWithColor['dist'])*app.distToPlane
+            # Saving dist in dictionary to use in depth buffer
+            sliceDict = {'dist': distWithColor['dist'], 'type': 'wall', 
+            'projHeight': projHeight, 'wallColor': distWithColor['wallColor']}
+
+            slices.append(sliceDict)
+        return slices
 
     def getDists(self, app, canvas):
-        dists = []
+        distsWithColor = []
         angle = app.player.angle - 30
         for i in range(self.numRays):
             angle += self.angleBetweenRays
             # if statement here might be wrong. come back if bugs.
             if angle > 360:
                 angle = 0
-            dists.append(self.getRay(app, angle, canvas))
-        return dists
+            distsWithColor.append(self.getRay(app, angle, canvas))
+        return distsWithColor
 
     def getRay(self, app, angle, canvas):
         if angle > 90 and angle < 270:
@@ -235,7 +270,7 @@ class Raycaster:
         return (px, py, end[1], color)
 
     def redraw(self, app, canvas):
-        self.drawMap(app, canvas)
+        self.drawScene(app, canvas)
 
-        for sprite in app.sprites:
-            sprite.redraw(app, canvas)
+        # for sprite in app.sprites:
+        #     sprite.redraw(app, canvas)

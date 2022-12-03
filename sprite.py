@@ -1,3 +1,5 @@
+# https://www.youtube.com/watch?v=kyI-Ken7aAk
+
 from cmu_112_graphics import *
 from helpers import *
 import math
@@ -32,8 +34,8 @@ class Sprite:
             q -= 360
 
         returnX = q * (app.width / fov)
-
         returnY = app.height / 2
+        
         return (returnX, returnY)
 
     def getSpriteDims(self, app):
