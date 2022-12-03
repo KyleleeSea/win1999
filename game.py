@@ -14,23 +14,23 @@ import random
 class Game:
     def __init__(self):
         self.bareTreeSprites = []
-        for i in range(1,6):
+        for i in range(1,2):
             imgPath =  f'./assets/bareTree{i}Sprite.png'
             self.bareTreeSprites.append(imgPath)
 
         self.treeSprites = ['./assets/treeSprite.png']
-        for i in range(2,16):
-            imgPath =  f'./assets/tree{i}Sprite.png'
-            self.bareTreeSprites.append(imgPath)
+        # for i in range(2,16):
+        #     imgPath =  f'./assets/tree{i}Sprite.png'
+        #     self.bareTreeSprites.append(imgPath)
         
-        self.otherSprites = ['./assets/bathtubSprite.png', 
-        './assets/statueSprite.png', './assets/cauldronJarsSprite.png',
-        './assets/closetSprite.png', './assets/clothesSprite.png',
-        './assets/flagSprite.png', './assets/runeSprite.png',
-        './assets/scarecrowSprite.png', './assets/shelfSprite.png',
-        './assets/shelfWithBooksSprite.png', './assets/shopSprite.png',
-        './assets/targetSprite.png', './assets/wellSprite.png',
-        './assets/wheelBarrowSprite.png']
+        self.otherSprites = ['./assets/bathtubSprite.png']
+        # './assets/statueSprite.png', './assets/cauldronJarsSprite.png',
+        # './assets/closetSprite.png', './assets/clothesSprite.png',
+        # './assets/flagSprite.png', './assets/runeSprite.png',
+        # './assets/scarecrowSprite.png', './assets/shelfSprite.png',
+        # './assets/shelfWithBooksSprite.png', './assets/shopSprite.png',
+        # './assets/targetSprite.png', './assets/wellSprite.png',
+        # './assets/wheelBarrowSprite.png']
 
     def initSprites(self, app):
         spritesList = []
@@ -43,15 +43,15 @@ class Game:
             # If <= 4 choose tree
             if randObj <= 4:
                 ind = random.randint(0, len(self.treeSprites) - 1)
-                toAppend = Sprite(self.treeSprites[ind], 64, row, col, app)
+                toAppend = Sprite(self.treeSprites[ind], 16, row, col, app)
             # If >= 4 but <= 8 choose bare tree
             elif randObj > 4 and randObj <= 8:
                 ind = random.randint(0, len(self.bareTreeSprites) - 1)
-                toAppend = Sprite(self.bareTreeSprites[ind], 64, row, col, app)
+                toAppend = Sprite(self.bareTreeSprites[ind], 16, row, col, app)
             # else choose other
             else:
                 ind = random.randint(0, len(self.otherSprites) - 1)
-                toAppend = Sprite(self.otherSprites[ind], 64, row, col, app)      
+                toAppend = Sprite(self.otherSprites[ind], 32, row, col, app)      
             spritesList.append(toAppend)
         return spritesList
 

@@ -78,9 +78,8 @@ class Sprite:
     def redraw(self, app, canvas):
         (x, y) = self.getSpriteCoords(app)
         sprite3DSize = self.getSpriteDims(app)/self.baseSize
-        if sprite3DSize > 10:
-            sprite3DSize = 10
-        if sprite3DSize > 0.5:
-            image3D = app.scaleImage(self.image, sprite3DSize)
-            canvas.create_image(x, 
-            y, image=ImageTk.PhotoImage(image3D))
+        if sprite3DSize > 30:
+            sprite3DSize = 30
+        image3D = app.scaleImage(self.image, sprite3DSize)
+        canvas.create_image(x, 
+        y, image=ImageTk.PhotoImage(image3D))

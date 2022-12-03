@@ -25,8 +25,7 @@ class Raycaster:
 
         self.numRays = 500
         self.angleBetweenRays = self.FOV/self.numRays
-
-        self.baseWallColor = (180, 191, 182)
+        self.baseWallColor = (189, 191, 163)
         self.baseSkyAndGroundColor = rgbString(37, 38, 38)
 
 # Creating dictionary of sprite with dist from player for use in drawing
@@ -39,7 +38,7 @@ class Raycaster:
         for sprite in app.sprites:
             screenX, screenY = sprite.getSpriteCoords(app)
             # Only including in list if in FOV for efficiency
-            if sprite.inFOV(screenX,app) and sprite.notBehindWall(app):
+            if sprite.inFOV(screenX,app):
                 dist = getDistance(app.player.xPos, app.player.yPos,
                 sprite.xPos, sprite.yPos)
                 spriteDict = {'dist': dist, 'type': 'sprite', 'obj': sprite}
@@ -58,7 +57,7 @@ class Raycaster:
         allElements = wallsList + spritesList
 
         # sort by distance
-        # allElements = sorted(allElements, key=itemgetter('dist'), reverse=True)
+        allElements = sorted(allElements, key=itemgetter('dist'), reverse=True)
 
         for element in allElements:
             if element['type'] == 'wall':
