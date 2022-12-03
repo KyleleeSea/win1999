@@ -1,6 +1,7 @@
 
 from cmu_112_graphics import *
 import pygame
+# https://www.cs.cmu.edu/~112/notes/notes-animations-part4.html
 
 class Sound(object):
     def __init__(self, path):

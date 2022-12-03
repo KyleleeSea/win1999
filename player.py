@@ -1,7 +1,7 @@
 from cmu_112_graphics import *
 from helpers import *
 from backgroundLogic import *
-from backgroundSound import *
+from footstepSound import *
 import math
 
 class Player:
@@ -12,7 +12,8 @@ class Player:
         self.maze = maze.maze
         self.exitBlock = maze.exitBlock
         self.angle = 90
-        self.moveVel = app.cellWidth//25
+        self.angleVel = 10 #Test
+        self.moveVel = app.cellWidth//15
         #Make player slower by increasing denominator of moveVel 
         (startX0, startY0, startX1, startY1) = getCellBounds(1, 1, self.maze, 
         app)
@@ -25,8 +26,16 @@ class Player:
         # playerSize for 2d debugging representation
         self.playerSize = int(app.cellWidth//5)
 
-    def adjustAngle(self, angleDiff):
-        self.angle = (self.angle - angleDiff) % 360
+    def adjustAngle(self, direction):
+        # self.angle = (self.angle - angleDiff) % 360
+        if direction == 'clockwise':
+            self.angle = (self.angle + self.angleVel) % 360
+        
+        elif direction == 'counterclockwise' and self.angle >= 5:
+            self.angle = (self.angle - self.angleVel)
+        
+        elif direction == 'counterclockwise' and self.angle <= 0:
+            self.angle = 360 - self.angleVel
 
     def movePlayer(self, app):
         # https://www.youtube.com/watch?v=rbokZWrwCJE
@@ -43,9 +52,9 @@ class Player:
             self.row, self.col = getCell(app, newX, newY, self.maze)
             adjustBackgroundVolume(app)
             # Commented out next level functionality for MVP
-            # if self.checkExit(self.exitBlock):
-                #nextLevel from backgroundLogic.py
-                # nextLevel(app)
+            if app.exitOpen and self.checkExit(self.exitBlock):
+                print('hit')
+                app.mode = 'win'
         # Row col updating for shadow logic
         if self.row != self.lastRow or self.col != self.lastCol:
             # Account for starter value
@@ -61,6 +70,11 @@ class Player:
     def keyPressed(self, app, event):
         if event.key == 'w':
             self.movePlayer(app)
+        elif event.key == 'd':
+            self.adjustAngle('clockwise')
+        elif event.key == 'a':
+            self.adjustAngle('counterclockwise')
+        
 
     def mouseMoved(self, app, event):
         if self.lastMousePos == None:

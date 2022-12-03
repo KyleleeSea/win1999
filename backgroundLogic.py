@@ -49,6 +49,7 @@ def checkLegalMove(lastCol,lastRow, newX, newY, maze, app):
 def checkCollision(app):
     if (app.player.row, app.player.col) == (app.enemy.row, app.enemy.col):
         if app.collisionCounter >= app.dieIntervals:
+            app.collisionSound.start(1)
             app.mode = 'death'
         else:
             app.collisionCounter += 1
@@ -61,12 +62,12 @@ def drawCollision(app, canvas):
         canvas.create_image(app.width//2, app.height//2, 
             image=ImageTk.PhotoImage(app.collisionImage))
 
-def checkGameWin(app):
+def checkTimer(app):
     app.currentWinInterval += 1
     app.timeRemaining = (app.secondsToWin-
         ((app.currentWinInterval*app.timerDelay)//1000))
     if app.currentWinInterval >= app.winIntervals:
-        app.mode = 'win'
+        app.exitOpen = True
     
 def displayTimeLeft(app, canvas):
     # print(app.timeRemaining)

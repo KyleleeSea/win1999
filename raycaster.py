@@ -179,18 +179,17 @@ class Raycaster:
             else:
                 self.baseSkyAndGroundColor = rgbString(69, 69, 69)
 
-            enemyToSliceDist = getDistance(px, py, app.enemy.xPos, 
-            app.enemy.yPos)
-            # Getting diagonal of one quadrant
-            quadrantX = (app.maze.size/2)*self.cellWidth
-            quadrantY = (app.maze.size/2)*self.cellHeight
-            maxDist = ((quadrantX**2 + quadrantY**2)**(1/2))
-            divisor = maxDist/enemyToSliceDist
+            playerToSliceDist = getDistance(px, py, app.player.xPos, 
+            app.player.yPos)
+
+            # 80 is a constant chosen to make reasonable divisor
+            divisor = playerToSliceDist/80
             if divisor < 1:
                 divisor = 1
-            elif divisor > 9:
-                divisor = 9
-
+            elif divisor > 7:
+                return rgbString(0, 0, 0)                
+            
+            # For both divisior = 1 and divisior < 7
             wallColor = []
             for part in self.baseWallColor:
                 wallColor.append(int(part/divisor))

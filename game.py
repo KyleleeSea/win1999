@@ -4,7 +4,7 @@ from cmu_112_graphics import *
 from maze import *
 from exitBlock import *
 from player import *
-from backgroundSound import *
+from footstepSound import *
 from backgroundLogic import *
 from enemy import *
 from playerShadow import *
@@ -72,10 +72,9 @@ class Game:
         app.enemy = Enemy(app, app.maze)
         app.playerShadow = PlayerShadow(app)
 
-        #Init audio
-        pygame.mixer.init()
         # https://obsydianx.itch.io/horror-sfx-volume-1
-        app.backgroundSound = backgroundSound('./assets/backgroundAudio.mp3') 
+        app.backgroundSound = footstepSound('./assets/footsteps.mp3') 
+        app.collisionSound = Sound('./assets/collision.mp3')
 
         #Init sprites
         app.sprites = self.initSprites(app)
@@ -90,22 +89,24 @@ class Game:
         app.collisionImage = app.loadImage('./assets/bonziLooking.png')
         app.death = Death(app)
 
-        app.secondsToWin = 5*60
+        app.secondsToWin = 0.5*60
         msToWin = app.secondsToWin*1000
         app.winIntervals = msToWin//app.timerDelay
         app.currentWinInterval = 0
         app.timeRemaining = app.secondsToWin
         app.win = Win(app)
+        app.exitOpen = False
 
     def timerFired(self, app):
         # in backgroundLogic
-        # checkCollision(app)
-        checkGameWin(app)
-        app.enemy.timerFired(app)
+        checkCollision(app)
+        if app.exitOpen != True:
+            checkTimer(app)
+        # app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
 
-    def mouseMoved(self, app, event):
-        app.player.mouseMoved(app, event)
+    # def mouseMoved(self, app, event):
+    #     app.player.mouseMoved(app, event)
 
     def keyPressed(self, app, event):
         app.player.keyPressed(app, event)
@@ -116,7 +117,7 @@ class Game:
         
         # Commented out 2d representation debugging code
         app.maze.redraw(app, canvas)
-        # app.exitBlock.redraw(app, canvas)
+        app.exitBlock.redraw(app, canvas)
         app.player.redraw(app, canvas)
         app.enemy.redraw(app, canvas)
         # in backgroundLogic
