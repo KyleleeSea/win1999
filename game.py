@@ -21,7 +21,7 @@ class Game:
         app.wallHeight = (1/6)*app.height
         app.distToPlane = (app.width/2)*math.tan(math.radians(30))
 
-        app.maze = Maze(10) #prev 15
+        app.maze = Maze(5) #prev 15
         app.level = 1
         exitBlockProportion = 0.6
         app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)
@@ -36,7 +36,7 @@ class Game:
         app.backgroundSound = backgroundSound('./assets/backgroundAudio.mp3') 
 
         #Init sprites
-        app.sprites = [Sprite('./assets/treeSprite64.png', 64, app)]   
+        app.sprites = [Sprite('./assets/treeSprite64.png', 64, 3, 3, app)]   
 
         app.raycaster = Raycaster(app, app.maze)
 
@@ -48,7 +48,7 @@ class Game:
         app.collisionImage = app.loadImage('./assets/bonziLooking.png')
         app.death = Death(app)
 
-        app.secondsToWin = 2*60
+        app.secondsToWin = 5*60
         msToWin = app.secondsToWin*1000
         app.winIntervals = msToWin//app.timerDelay
         app.currentWinInterval = 0

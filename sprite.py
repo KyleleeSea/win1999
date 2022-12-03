@@ -5,17 +5,16 @@ from helpers import *
 import math
 
 class Sprite:
-    def __init__(self, path, baseSize, app):
+    def __init__(self, path, baseSize, row, col, app):
         self.image = app.loadImage(path)
         self.baseSize = baseSize
 
-        bounds = getCellBounds(2, 2, app.maze.maze, app)
+        bounds = getCellBounds(row, col, app.maze.maze, app)
 
+        self.row = row
+        self.col = col
         self.xPos = (bounds[0] + bounds[2])//2
         self.yPos = (bounds[1] + bounds[3])//2
-    
-    def inFOV():
-        pass
 
 # returnX error moves left when player looks left, when should be
 # moving right
@@ -23,7 +22,7 @@ class Sprite:
         fov = 60
         hX = self.xPos - app.player.xPos
         hY = self.yPos - app.player.yPos
-        p = ((math.atan2(-hY, hX) * (math.radians(180))))%360
+        p = (math.degrees(math.atan2(-hY, hX)))%360
 
         q = app.player.angle-90 + (fov/2) - p
         if (app.player.angle >= 0 and app.player.angle <= 90 and 
@@ -33,7 +32,8 @@ class Sprite:
         p >= 0 and p <= 90):
             q -= 360
 
-        returnX = q * (app.width / fov)
+        # APP.WIDTH - SOLVES DIRECTION ERROR
+        returnX = app.width - (q * (app.width / fov))
         returnY = app.height / 2
         
         return (returnX, returnY)
@@ -53,8 +53,8 @@ class Sprite:
     def redraw(self, app, canvas):
         (x, y) = self.getSpriteCoords(app)
         sprite3DSize = self.getSpriteDims(app)/self.baseSize
-        if sprite3DSize > 15:
-            sprite3DSize = 15
+        if sprite3DSize > 20:
+            sprite3DSize = 20
         if sprite3DSize > 0.5:
             image3D = app.scaleImage(self.image, sprite3DSize)
             canvas.create_image(x, 
