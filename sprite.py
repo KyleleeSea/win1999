@@ -15,6 +15,8 @@ class Sprite:
     def inFOV():
         pass
 
+# returnX error moves left when player looks left, when should be
+# moving right
     def getSpriteCoords(self, app):
         fov = 60
         hX = self.xPos - app.player.xPos
@@ -29,8 +31,8 @@ class Sprite:
         p >= 0 and p <= 90):
             q -= 360
 
-
         returnX = q * (app.width / fov)
+
         returnY = app.height / 2
         return (returnX, returnY)
 
@@ -40,6 +42,11 @@ class Sprite:
 
         scale = app.distToPlane * (app.wallHeight/dist)
         return scale
+    
+    def inFOV(self, xPos, app):
+        if xPos >= 0 and xPos <= app.width:
+            return True
+        return False
     
     def redraw(self, app, canvas):
         (x, y) = self.getSpriteCoords(app)

@@ -22,6 +22,18 @@ class Raycaster:
         self.baseWallColor = (255, 107, 107)
         self.baseSkyAndGroundColor = rgbString(69, 69, 69)
 
+    def spriteCaster(self, app):
+        spriteList = []
+        for sprite in app.sprites:
+            screenX, screenY = sprite.getSpriteCoords(app)
+            if sprite.inFOV(screenX, app):
+                dist = getDistance(app.player.xPos, app.player.yPos,
+                sprite.xPos, sprite.yPos)
+                spriteDict = {'dist': dist, 'type': 'sprite', 'obj': sprite,
+                'screenX': screenX, 'screenY': screenY}
+                spriteList.append(spriteDict)
+        return spriteList
+
     def drawMap(self, app, canvas):
         heightsWithColors = self.distsToHeights(app, canvas)
         planeWidth = app.width
