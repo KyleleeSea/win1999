@@ -134,6 +134,15 @@ class Maze:
                     openCellsList.remove((newRow, newCol))
             return None
 
+# Helper needed for sprite gen
+    def getOpenCells(self):
+        openCells = []
+        for row in range(len(self.maze)):
+            for col in range(len(self.maze[0])):
+                if self.maze[row][col] == 0:
+                    openCells.append((row,col))
+        return openCells
+
 #----------------------
 # Maze drawing helpers
 def drawWall(app, canvas, row, col, maze):

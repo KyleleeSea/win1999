@@ -26,8 +26,8 @@ class Raycaster:
         self.numRays = 500
         self.angleBetweenRays = self.FOV/self.numRays
 
-        self.baseWallColor = (255, 107, 107)
-        self.baseSkyAndGroundColor = rgbString(69, 69, 69)
+        self.baseWallColor = (180, 191, 182)
+        self.baseSkyAndGroundColor = rgbString(37, 38, 38)
 
 # Creating dictionary of sprite with dist from player for use in drawing
 # priority to hide behind walls
@@ -39,7 +39,7 @@ class Raycaster:
         for sprite in app.sprites:
             screenX, screenY = sprite.getSpriteCoords(app)
             # Only including in list if in FOV for efficiency
-            if sprite.inFOV(screenX, app):
+            if sprite.inFOV(screenX,app) and sprite.notBehindWall(app):
                 dist = getDistance(app.player.xPos, app.player.yPos,
                 sprite.xPos, sprite.yPos)
                 spriteDict = {'dist': dist, 'type': 'sprite', 'obj': sprite}
@@ -123,21 +123,21 @@ class Raycaster:
             # if statement here might be wrong. come back if bugs.
             if angle > 360:
                 angle = 0
-            ray = self.getRay(app, angle, canvas)
+            ray = self.getRay(app, angle)
             # Need to get xNum to draw x position correctly with depth buffer
             ray['xNum'] = i
             distsWithColor.append(ray)
         return distsWithColor
 
-    def getRay(self, app, angle, canvas):
+    def getRay(self, app, angle):
         if angle > 90 and angle < 270:
-            distHor = self.horizontalUpRay(app, angle, canvas)
+            distHor = self.horizontalUpRay(app, angle)
         else:
-            distHor = self.horizontalDownRay(app, angle, canvas)
+            distHor = self.horizontalDownRay(app, angle)
         if angle > 0 and angle < 180:
-            distVer = self.verticalRightRay(app, angle, canvas)
+            distVer = self.verticalRightRay(app, angle)
         else:
-            distVer = self.verticalLeftRay(app, angle, canvas)
+            distVer = self.verticalLeftRay(app, angle)
         if distHor[2] < distVer[2]:
             return {'dist': distHor[2], 'wallColor': distHor[3]}
         else:
@@ -197,7 +197,7 @@ class Raycaster:
             wallColor = rgbString(wallColor[0], wallColor[1], wallColor[2])
             return wallColor
 
-    def verticalRightRay(self, app, angle, canvas):
+    def verticalRightRay(self, app, angle):
     # end variable first arg: True or False condition. second arg: distance
     # value. 
         end = (False, 0)
@@ -216,7 +216,7 @@ class Raycaster:
         color = self.wallShadeFormula(px, py, app)
         return (px, py, end[1], color)
 
-    def verticalLeftRay(self, app, angle, canvas):
+    def verticalLeftRay(self, app, angle):
         end = (False, 0)
         px = self.cellWidth*(app.player.col)
         py = (app.player.yPos - 
@@ -234,7 +234,7 @@ class Raycaster:
         color = self.wallShadeFormula(px, py, app)
         return (px, py, end[1], color)
 
-    def horizontalDownRay(self, app, angle, canvas):
+    def horizontalDownRay(self, app, angle):
         end = (False, 0)
         py = self.cellHeight*(app.player.row + 1)
         #0.0001 added to avoid div by 0 error
@@ -254,7 +254,7 @@ class Raycaster:
         color = self.wallShadeFormula(px, py, app)
         return (px, py, end[1], color)  
 
-    def horizontalUpRay(self, app, angle, canvas):
+    def horizontalUpRay(self, app, angle):
         end = (False, 0)
         py = self.cellHeight*(app.player.row)
         px = (app.player.xPos + 
