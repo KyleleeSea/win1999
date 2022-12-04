@@ -62,7 +62,7 @@ def drawCollision(app, canvas):
         canvas.create_image(app.width//2, app.height//2, 
             image=ImageTk.PhotoImage(app.collisionImage))
 
-def checkTimer(app):
+def checkWinTimer(app):
     app.currentWinInterval += 1
     app.timeRemaining = (app.secondsToWin-
         ((app.currentWinInterval*app.timerDelay)//1000))

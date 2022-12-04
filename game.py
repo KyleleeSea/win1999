@@ -33,6 +33,8 @@ class Game:
          './assets/shopSprite.png', './assets/wellSprite.png',
         './assets/wheelBarrowSprite.png']
 
+        self.playingLegalSound = False
+
     def initSprites(self, app):
         spritesList = [app.enemy.spriteVisual]
         openCells = app.maze.getOpenCells()
@@ -57,6 +59,7 @@ class Game:
         return spritesList
 
     def startGame(self, app):
+        app.timerDelay = 100
         app.cellHeight = 128
         app.cellWidth = 128
 
@@ -75,6 +78,11 @@ class Game:
         # https://obsydianx.itch.io/horror-sfx-volume-1
         app.backgroundSound = footstepSound('./assets/footsteps.mp3') 
         app.collisionSound = Sound('./assets/collision.mp3')
+        # https://freetts.com/
+        app.introSound = Sound('./assets/introVoice.mp3')
+        app.introSound.start(0)
+
+        app.legalInformationSound = Sound('./assets/introVoice2.mp3')
 
         #Init sprites
         app.sprites = self.initSprites(app)
@@ -97,11 +105,31 @@ class Game:
         app.win = Win(app)
         app.exitOpen = False
 
-    def timerFired(self, app):
+        # Counting something but not seconds? 
+        # Seems to be counting like 2/3rds of a second
+        app.secondCounter = 1
+        app.intervalsPerSecond = 1000//app.timerDelay
+        app.currentSecondInterval = 1
+
+# Game Logic
+    def gameFlow(self, app):
+        print(app.secondCounter)
+        app.currentSecondInterval += 1
+        if app.currentSecondInterval >= app.intervalsPerSecond:
+            app.secondCounter += 1
+            app.currentSecondInterval = 1
+        if self.playingLegalSound == False and app.secondCounter == 25:
+            app.legalInformationSound.start(0)
+            self.playingLegalSound = True
+
+
+    def timerFired(self, app):    
+        self.gameFlow(app)    
+
         # in backgroundLogic
         checkCollision(app)
         if app.exitOpen != True:
-            checkTimer(app)
+            checkWinTimer(app)
         # app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
 

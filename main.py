@@ -7,7 +7,7 @@ import sys
 sys.setrecursionlimit(10**6)
 
 def appStarted(app):
-    app.timerDelay = 150
+    app.timerDelay = 100
     app.mode = 'start'
     app.start = StartScreen(app)
     app.shortestPath = []
@@ -32,12 +32,8 @@ def start_redrawAll(app, canvas):
 def start_keyPressed(app, event):
     app.start.keyPressed(app, event)
 
-# Instructions screen
-def instructions_redrawAll(app, canvas):
-    app.instructions.redraw(app, canvas)
-
-def instructions_keyPressed(app, event):
-    app.instructions.keyPressed(app, event)
+def start_mousePressed(app, event):
+    app.start.mousePressed(app, event)
 
 # Death screen
 # app.death initialized in game
@@ -54,7 +50,7 @@ def win_redrawAll(app, canvas):
 
 def win_keyPressed(app, event):
     app.win.keyPressed(app, event)
-    
+
 # Game screen
 def game_timerFired(app):
     app.game.timerFired(app)
@@ -69,7 +65,6 @@ def game_redrawAll(app, canvas):
     app.game.redraw(app, canvas)
 
 def appStopped(app):
-    app.game.appStopped(app)
     pygame.mixer.stop()
 
 runApp(width=1500, height=700)

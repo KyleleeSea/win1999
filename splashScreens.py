@@ -19,22 +19,10 @@ class Death:
     def keyPressed(self, app, event):
         if event.key == 'f':
             app.mode = 'start'
-
-class Instructions:
-    def __init__(self, app):
-        self.instructionImage = app.loadImage('./assets/instructions.png')
-    
-    def redraw(self, app, canvas):
-            canvas.create_image(app.width//2, app.height//2, 
-            image=ImageTk.PhotoImage(self.instructionImage))
-        
-    def keyPressed(self, app, event):
-        if event.key == 'w':
-            app.mode = 'start'
-
+            
 class Win:
     def __init__(self, app):
-        self.winImage = app.loadImage('./assets/win.png')
+        self.winImage = app.loadImage('./assets/newWinScreen.png')
     
     def redraw(self, app, canvas):
             canvas.create_image(app.width//2, app.height//2, 
