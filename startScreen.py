@@ -1,4 +1,4 @@
-# Splash screen images: https://ansimuz.itch.io/grunge-horror-environment
+# Splash screen images: https://hello-tazzina.itch.io/greenwoods-ii
 # Splash screen font: https://fonts2u.com/pixel-nes.font
 # Splash screen implementation inspired by my previous work
 # in Hack112. https://github.com/KyleleeSea/slashnbash

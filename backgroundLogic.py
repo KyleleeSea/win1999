@@ -49,7 +49,7 @@ def checkLegalMove(lastCol,lastRow, newX, newY, maze, app):
 def checkCollision(app):
     if (app.player.row, app.player.col) == (app.enemy.row, app.enemy.col):
         if app.collisionCounter >= app.dieIntervals:
-            app.collisionSound.start(1)
+            app.collisionSound.start(0)
             app.mode = 'death'
         else:
             app.collisionCounter += 1

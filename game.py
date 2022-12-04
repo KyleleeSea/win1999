@@ -90,8 +90,8 @@ class Game:
 
         app.raycaster = Raycaster(app, app.maze)
 
-        # Player can be in same cell for up to 1 second before dying
-        secondsToDie = 1
+        # Player can be in same cell for up to 0.25 seconds before dying
+        secondsToDie = 0.25
         mstoDie = secondsToDie*1000
         app.dieIntervals = mstoDie//app.timerDelay
         app.collisionCounter = 0

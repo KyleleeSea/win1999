@@ -40,8 +40,11 @@ def start_mousePressed(app, event):
 def death_redrawAll(app, canvas):
     app.death.redraw(app, canvas)
 
-def death_keyPressed(app, event):
-    app.death.keyPressed(app, event)
+def death_mousePressed(app, event):
+    app.death.mousePressed(app, event)
+
+def death_timerFired(app):
+    app.death.timerFired(app)
 
 # Win screen
 # app.win initialized in game
