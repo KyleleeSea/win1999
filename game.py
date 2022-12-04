@@ -77,11 +77,12 @@ class Game:
 
         # https://obsydianx.itch.io/horror-sfx-volume-1
         app.backgroundSound = footstepSound('./assets/footsteps.mp3') 
+        # https://www.youtube.com/watch?v=F2hvl2iOI8k
         app.collisionSound = Sound('./assets/collision.mp3')
         # https://freetts.com/
         app.introSound = Sound('./assets/introVoice.mp3')
         app.introSound.start(0)
-
+        # https://freetts.com/
         app.legalInformationSound = Sound('./assets/introVoice2.mp3')
 
         #Init sprites
@@ -113,7 +114,6 @@ class Game:
 
 # Game Logic
     def gameFlow(self, app):
-        print(app.secondCounter)
         app.currentSecondInterval += 1
         if app.currentSecondInterval >= app.intervalsPerSecond:
             app.secondCounter += 1
@@ -141,7 +141,7 @@ class Game:
 
     def redraw(self, app, canvas):
         app.raycaster.redraw(app, canvas)
-        displayTimeLeft(app, canvas)
+        # displayTimeLeft(app, canvas)
         
         # Commented out 2d representation debugging code
         app.maze.redraw(app, canvas)

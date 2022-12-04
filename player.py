@@ -37,15 +37,17 @@ class Player:
         elif direction == 'counterclockwise' and self.angle <= 0:
             self.angle = 360 - self.angleVel
 
-    def movePlayer(self, app):
+    def movePlayer(self, app, direction):
         # https://www.youtube.com/watch?v=rbokZWrwCJE
         # "Solve a Right Triangle Given an Angle and the Hypotenuse"
         # https://www.tutorialspoint.com/python/number_sin.htm
         # https://www.geeksforgeeks.org/degrees-and-radians-in-python/
         # Must convert to radians. Sin and cos in radians
 
-        newX = self.xPos + self.moveVel * math.sin(math.radians(self.angle))
-        newY = self.yPos + self.moveVel * math.cos(math.radians(self.angle))
+        newX = self.xPos + self.moveVel * math.sin(math.radians(self.angle
+        -90*direction))
+        newY = self.yPos + self.moveVel * math.cos(math.radians(self.angle
+        -90*direction))
         if checkLegalMove(self.lastCol, self.lastRow, newX, newY, self.maze, app):
             self.xPos = newX
             self.yPos = newY
@@ -69,10 +71,16 @@ class Player:
 
     def keyPressed(self, app, event):
         if event.key == 'w':
-            self.movePlayer(app)
-        elif event.key == 'd':
+            self.movePlayer(app, 0)
+        if event.key == 'd':
+            self.movePlayer(app, -1)
+        if event.key == 'a':
+            self.movePlayer(app, 1)
+        if event.key == 's':
+            self.movePlayer(app, 2)
+        elif event.key == 'l':
             self.adjustAngle('clockwise')
-        elif event.key == 'a':
+        elif event.key == 'k':
             self.adjustAngle('counterclockwise')
         
 

@@ -41,6 +41,7 @@ class Enemy:
         # Implementation inspired by my previous work for Hack112
         # https://github.com/KyleleeSea/slashnbash/blob/main/earth_enemy.py
         # Load spritesheets
+        # https://www.deviantart.com/thenoahguy1/art/Bonzi-spritesheet-440805977
         spritesheet = app.loadImage('./assets/bonziBuddy.png')
         startX = 0
         xWidth = 60.23
