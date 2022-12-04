@@ -49,9 +49,11 @@ class Sprite:
     def getSpriteDims(self, app):
         dist = getDistance(app.player.xPos, app.player.yPos,
         self.xPos, self.yPos)
+        if dist > 0:
 
-        scale = app.distToPlane * (app.wallHeight/dist+0.0000001)
-        return scale
+            scale = app.distToPlane * (app.wallHeight/dist+0.0000001)
+            return scale
+        return 1
     
     def inFOV(self, xPos, app):
         if xPos >= 0 and xPos <= app.width:
@@ -85,7 +87,7 @@ class Sprite:
         (x, y) = self.getSpriteCoords(app)
         sprite3DSize = self.getSpriteDims(app)/self.baseSize
         # print(sprite3DSize)
-        if sprite3DSize < 40: # try lower #s later 
+        if sprite3DSize < 45: # try lower #s later 
             image3D = app.scaleImage(self.image, sprite3DSize)
             canvas.create_image(x, 
             y, image=ImageTk.PhotoImage(image3D))

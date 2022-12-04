@@ -28,7 +28,7 @@ class Game:
         
         self.otherSprites = ['./assets/statueSprite.png', 
         './assets/cauldronJarsSprite.png', './assets/closetSprite.png', 
-        './assets/clothesSprite.png', './assets/runeSprite.png',
+        './assets/clothesSprite.png',
         './assets/scarecrowSprite.png', './assets/shelfSprite.png',
          './assets/shopSprite.png', './assets/wellSprite.png',
         './assets/wheelBarrowSprite.png']
@@ -38,7 +38,7 @@ class Game:
         openCells = app.maze.getOpenCells()
         openCells.remove((1,1))
         random.shuffle(openCells)
-        for i in range(len(openCells)//4):
+        for i in range(len(openCells)//2):
             (row, col) = openCells[i]
             randObj = random.randint(1,10)
             # If <= 4 choose tree
@@ -46,7 +46,7 @@ class Game:
                 ind = random.randint(0, len(self.treeSprites) - 1)
                 toAppend = Sprite(self.treeSprites[ind], 16, row, col, app)
             # If >= 4 but <= 8 choose bare tree
-            elif randObj > 4 and randObj <= 8:
+            elif randObj > 4 and randObj <= 7:
                 ind = random.randint(0, len(self.bareTreeSprites) - 1)
                 toAppend = Sprite(self.bareTreeSprites[ind], 16, row, col, app)
             # else choose other
@@ -63,7 +63,7 @@ class Game:
         app.wallHeight = (1/3)*app.height
         app.distToPlane = (app.width/2)*math.tan(math.radians(30))
 
-        app.maze = Maze(15) #prev 15
+        app.maze = Maze(15) #prev 15 # end game like size 25?
         app.level = 1
         exitBlockProportion = 0.6
         app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)
@@ -89,7 +89,7 @@ class Game:
         app.collisionImage = app.loadImage('./assets/bonziLooking.png')
         app.death = Death(app)
 
-        app.secondsToWin = 0.5*60
+        app.secondsToWin = 3*60
         msToWin = app.secondsToWin*1000
         app.winIntervals = msToWin//app.timerDelay
         app.currentWinInterval = 0
