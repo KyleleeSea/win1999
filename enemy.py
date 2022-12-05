@@ -24,9 +24,9 @@ class Enemy:
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
-        self.wanderSpeed = (app.player.moveVel)*3
-        self.huntSpeed = (app.player.moveVel)*3
-        self.followSpeed = (app.player.moveVel)*2
+        self.wanderSpeed = (app.player.moveVel)*2
+        self.huntSpeed = (app.player.moveVel)*2
+        self.followSpeed = (app.player.moveVel)*1.5
         # enemySize probably not needed after sprite animated
         self.enemySize = app.player.playerSize
         self.collisionDist = 15
@@ -103,8 +103,7 @@ class Enemy:
 # Controller move functions
 # Actions
     def wander(self, app):
-        print('now wandering')
-        if self.checkStraightLine(app):
+        if self.checkFullStraightLine(app):
             self.visited = set()
             self.movingBack = []
             self.state = 'following'
@@ -153,7 +152,7 @@ class Enemy:
             self.movingBack = []
 
     def hunt(self, app):
-        if self.checkStraightLine(app):
+        if self.check2LenStraightLine(app):
             self.state = 'following'
         # Check shadow exists 
         if len(app.playerShadow.shadow) == 0:
@@ -196,7 +195,19 @@ class Enemy:
             self.changeVelFollow(moveCol, moveRow)
 
 # Action Helpers
-    def checkStraightLine(self, app):
+    def checkFullStraightLine(self, app):
+        dirs = [(0,1), (0, -1), (1,0), (-1, 0)]
+        for direction in dirs:
+            newRow = self.row + direction[0]
+            newCol = self.col + direction[1]
+            while app.maze.maze[newRow][newCol] != 1:
+                if (app.player.row, app.player.col) == (newRow, newCol):
+                    return True
+                newRow += direction[0]
+                newCol += direction[1]
+        return False
+
+    def check2LenStraightLine(self, app):
         # Note: Currently not checking diagonals
         directions = [(0,1), (0, -1), (1,0), (-1, 0), (1,1), (1,-1), (-1,1),
         (-1,-1)]

@@ -127,10 +127,10 @@ class Game:
         self.gameFlow(app)    
 
         # in backgroundLogic
-        checkCollision(app)
+        # checkCollision(app)
         if app.exitOpen != True:
             checkWinTimer(app)
-        # app.enemy.timerFired(app)
+        app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
 
     # def mouseMoved(self, app, event):
