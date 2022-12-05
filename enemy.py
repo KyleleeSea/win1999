@@ -189,9 +189,6 @@ class Enemy:
         if self.currentInterval >= self.followIntervals:
             self.currentInterval = 0
             self.state = 'wandering'
-
-        if (self.row, self.col) == (app.player.row, app.player.col):
-            self.changeVelFollow(0,0)
         
         if (self.row, self.col) != (app.player.row, app.player.col):
             moveTowardRow, moveTowardCol = shortestPath((self.row, self.col), 
@@ -305,20 +302,21 @@ class Enemy:
         # self.move()
         # self.lastRow = self.row
         # self.lastCol = self.col
-        (cellWidth, cellHeight) = getCellSpecs(app, self.maze.maze)
-        (xDiffPos, xDiffNeg, yDiffPos, yDiffNeg) = (self.lastX+cellWidth-5,
-        self.lastX-cellWidth+5, self.lastY+cellHeight-5, 
-        self.lastY-cellHeight+5)
+        # Freeze as soon as enter row and col of player
+        if (self.row, self.col) != (app.player.row, app.player.col):
+            (cellWidth, cellHeight) = getCellSpecs(app, self.maze.maze)
+            (xDiffPos, xDiffNeg, yDiffPos, yDiffNeg) = (self.lastX+cellWidth-5,
+            self.lastX-cellWidth+5, self.lastY+cellHeight-5, 
+            self.lastY-cellHeight+5)
 
-        if (self.xPos > xDiffPos or self.xPos < xDiffNeg or 
-        self.yPos > yDiffPos or self.yPos < yDiffNeg):
-            print('changing state')
-            self.changeState(app)
-            self.lastX = self.xPos
-            self.lastY = self.yPos
-        
-        self.move()
-        self.updateRowCol(app)
+            if (self.xPos > xDiffPos or self.xPos < xDiffNeg or 
+            self.yPos > yDiffPos or self.yPos < yDiffNeg):
+                self.changeState(app)
+                self.lastX = self.xPos
+                self.lastY = self.yPos
+            
+            self.move()
+            self.updateRowCol(app)
 
         if self.state == 'following':
             self.currentInterval += 1
