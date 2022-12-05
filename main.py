@@ -35,6 +35,9 @@ def start_keyPressed(app, event):
 def start_mousePressed(app, event):
     app.start.mousePressed(app, event)
 
+def start_timerFired(app):
+    app.start.timerFired(app)
+
 # Death screen
 # app.death initialized in game
 def death_redrawAll(app, canvas):
@@ -70,4 +73,4 @@ def game_redrawAll(app, canvas):
 def appStopped(app):
     pygame.mixer.stop()
 
-runApp(width=1500, height=600)
+runApp(width=1500, height=900)

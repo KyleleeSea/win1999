@@ -74,15 +74,6 @@ class Raycaster:
             elif element['type'] == 'sprite':
                 element['obj'].redraw(app, canvas)
 
-        # for wallSlice in heightsWithColors:
-        #     (x0, x1) = (currX, currX+xAdj)
-        #     self.drawWall(app, canvas, x0, x1, cy, wallSlice['projHeight'],
-        #     wallSlice['wallColor'])
-        #     self.drawSky(app, canvas, x0, x1, cy, wallSlice['projHeight'])
-        #     self.drawGround(app, canvas, x0, x1, cy, wallSlice['projHeight'])
-
-        #     currX = x1
-
     def drawWall(self, app, canvas, x0, x1, cy, height, color): 
         (y0, y1) = (cy-(height/2),cy+(height/2))
         currX = x1
