@@ -16,17 +16,19 @@ class Enemy:
     def __init__(self, app, maze):
         self.maze = maze
         self.xPos, self.yPos, self.row, self.col = self.spawn(app)
+        self.lastX = self.xPos - 500
+        self.lastY = self.yPos - 500
         self.lastRow = 1
         self.lastCol = 1
         self.xVel = 0
         self.yVel = 0
-        self.state = 'wandering'
+        self.state = 'following'
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
-        self.wanderSpeed = (app.player.moveVel)*2
-        self.huntSpeed = (app.player.moveVel)*2
-        self.followSpeed = (app.player.moveVel)*1.5
+        self.wanderSpeed = (app.player.moveVel)*1.5
+        self.huntSpeed = (app.player.moveVel)*1.5
+        self.followSpeed = (app.player.moveVel)*0.75
         # enemySize probably not needed after sprite animated
         self.enemySize = app.player.playerSize
         self.collisionDist = 15
@@ -187,6 +189,9 @@ class Enemy:
         if self.currentInterval >= self.followIntervals:
             self.currentInterval = 0
             self.state = 'wandering'
+
+        if (self.row, self.col) == (app.player.row, app.player.col):
+            self.changeVelFollow(0,0)
         
         if (self.row, self.col) != (app.player.row, app.player.col):
             moveTowardRow, moveTowardCol = shortestPath((self.row, self.col), 
@@ -294,12 +299,25 @@ class Enemy:
 
     def movementUpdates(self, app):
         # Only update state if in new row or new col
-        if self.row != self.lastRow or self.col != self.lastCol:
+        # if self.row != self.lastRow or self.col != self.lastCol:
+        #     self.changeState(app)
+        # # Always move
+        # self.move()
+        # self.lastRow = self.row
+        # self.lastCol = self.col
+        (cellWidth, cellHeight) = getCellSpecs(app, self.maze.maze)
+        (xDiffPos, xDiffNeg, yDiffPos, yDiffNeg) = (self.lastX+cellWidth-5,
+        self.lastX-cellWidth+5, self.lastY+cellHeight-5, 
+        self.lastY-cellHeight+5)
+
+        if (self.xPos > xDiffPos or self.xPos < xDiffNeg or 
+        self.yPos > yDiffPos or self.yPos < yDiffNeg):
+            print('changing state')
             self.changeState(app)
-        # Always move
+            self.lastX = self.xPos
+            self.lastY = self.yPos
+        
         self.move()
-        self.lastRow = self.row
-        self.lastCol = self.col
         self.updateRowCol(app)
 
         if self.state == 'following':

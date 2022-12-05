@@ -106,8 +106,13 @@ class Raycaster:
 
         for distWithColor in distsWithColors:
             # Get projection height
-            projHeight = ((app.wallHeight/distWithColor['dist']
-            +0.00001)*app.distToPlane)
+            # If else to avoid div by 0
+            if distWithColor['dist'] > 0: 
+                projHeight = ((app.wallHeight/distWithColor['dist']
+                )*app.distToPlane)
+            else:
+                # might cause problems come back
+                projHeight = ((app.wallHeight/0.0000001)*app.distToPlane)
             # Saving dist in dictionary to use in depth buffer
             sliceDict = {'dist': distWithColor['dist'], 'type': 'wall', 
             'projHeight': projHeight, 'wallColor': distWithColor['wallColor'],
