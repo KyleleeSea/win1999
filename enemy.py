@@ -22,7 +22,7 @@ class Enemy:
         self.lastCol = 1
         self.xVel = 0
         self.yVel = 0
-        self.state = 'peekToPlayer'
+        self.state = 'stareNotFound'
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
@@ -45,13 +45,12 @@ class Enemy:
         self.followIntervals = msToFollow//app.timerDelay
         self.currentInterval = 0
 
+        self.stareIntervals = 15
+        self.currentStareInterval = 0
+
         # Implementation inspired by my previous work for Hack112
         # https://github.com/KyleleeSea/slashnbash/blob/main/earth_enemy.py
         # Load spritesheets
-        # https://www.deviantart.com/thenoahguy1/art/Bonzi-spritesheet-440805977
-        spritesheet = app.loadImage('./assets/bonziBuddy.png')
-        startX = 0
-        xWidth = 60.23
         self.animationCounter = 0
         self.allAnim = []
 
@@ -79,9 +78,30 @@ class Enemy:
 
 # Controller move functions
 # Actions
+    def stare(self, app):
+        if self.state == 'stareNotFound':
+            print('staring looking for player')
+            if self.checkPlayerNearby(app):
+                self.state = 'stare'
+            
+            self.follow(app)
+        
+        if self.state == 'stare':
+            print('staring')
+            self.changeVelRunAway(0, 0)
+        
+        if self.state == 'stareAway':
+            # <2 rather than == to avoid bugs regarding edge of cells
+            distFromGoal = getDistance(self.row, self.col, self.rowTo, 
+            self.colTo)
+            if distFromGoal < 2:
+                self.state = 'stareNotFound'
+            
+            self.runAway(app)
+
     def peek(self, app):
         if self.state == 'peekToPlayer':
-            if self.checkPlayerNearForPeek(app):
+            if self.checkPlayerNearby(app):
                 self.state = 'peekAway'
                 goTo = self.spawn(app, 5)
                 self.rowTo = goTo[2]
@@ -92,15 +112,9 @@ class Enemy:
             # <2 rather than == to avoid bugs regarding edge of cells
             if getDistance(self.row, self.col, self.rowTo, self.colTo) < 2:
                 self.state = 'peekToPlayer'
-            
-            path = shortestPath((self.row, self.col), 
-            app, (self.rowTo, self.colTo))
-            if len(path) > 0:
-                moveTowardRow, moveTowardCol = path[-1]
-                moveRow, moveCol = (moveTowardRow-self.row, 
-                moveTowardCol-self.col)
-                self.changeVelRunAway(moveCol, moveRow)
 
+            self.runAway(app)
+            
     def wander(self, app):
         if self.check2LenStraightLine(app):
             self.visited = set()
@@ -196,7 +210,17 @@ class Enemy:
             self.changeVelFollow(moveCol, moveRow)
 
 # Action Helpers
-    def checkPlayerNearForPeek(self, app):
+    def runAway(self, app):
+        path = shortestPath((self.row, self.col), 
+        app, (self.rowTo, self.colTo))
+
+        if len(path) > 0:
+            moveTowardRow, moveTowardCol = path[-1]
+            moveRow, moveCol = (moveTowardRow-self.row, 
+            moveTowardCol-self.col)
+            self.changeVelRunAway(moveCol, moveRow)
+
+    def checkPlayerNearby(self, app):
         if self.checkFullStraightLine(app):
             return True
 
@@ -285,9 +309,6 @@ class Enemy:
         self.row, self.col = getCell(app, self.xPos, self.yPos, self.maze.maze)
         self.spriteVisual.row = self.row
         self.spriteVisual.col = self.col
-    
-    def rushCondition(self):
-        pass
 
 # Action logic
     def animationUpdates(self, app):
@@ -297,15 +318,10 @@ class Enemy:
         self.spriteVisual.image = self.allAnim[self.animationCounter]
 
     def movementUpdates(self, app):
-        # Only update state if in new row or new col
-        # if self.row != self.lastRow or self.col != self.lastCol:
-        #     self.changeState(app)
-        # # Always move
-        # self.move()
-        # self.lastRow = self.row
-        # self.lastCol = self.col
         # Freeze as soon as enter row and col of player
-        if (self.row, self.col) != (app.player.row, app.player.col):
+        # Unless going to peek or stare away cell
+        if ((self.row, self.col) != (app.player.row, app.player.col) or
+        self.state=='peekAway' or self.state=='stareAway'):
             (cellWidth, cellHeight) = getCellSpecs(app, self.maze.maze)
             (xDiffPos, xDiffNeg, yDiffPos, yDiffNeg) = (self.lastX+cellWidth-5,
             self.lastX-cellWidth+5, self.lastY+cellHeight-5, 
@@ -322,6 +338,19 @@ class Enemy:
 
         if self.state == 'following':
             self.currentInterval += 1
+        
+        if self.state == 'stare':
+            print(self.currentStareInterval)
+            print(self.state)
+            self.currentStareInterval += 1
+            if self.currentStareInterval >= self.stareIntervals:
+                print('go away')
+                self.state = 'stareAway'
+                self.currentStareInterval = 0
+                goTo = self.spawn(app, 5)
+                self.rowTo = goTo[2]
+                self.colTo = goTo[3]
+                self.runAway(app)
 
     def timerFired(self, app):
         self.animationUpdates(app)
@@ -338,6 +367,9 @@ class Enemy:
             self.follow(app)
         elif self.state == 'peekToPlayer' or self.state == 'peekAway':
             self.peek(app)
+        elif (self.state == 'stare' or self.state == 'stareNotFound' or
+        self.state == 'stareAway'):
+            self.stare(app)
 
 # View 2D (visual representation for 3D)
     def redraw(self, app, canvas):
