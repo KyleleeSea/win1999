@@ -29,9 +29,9 @@ class StartScreen:
     def slicingBckg(self, app):
         self.bckgSlices = []
         
-        for i in range(400):
+        for i in range(300):
             bckgSlice = self.bckgImage.crop((i*self.roundHalfUp(app.width
-            /400), 0, (i+1)*self.roundHalfUp(app.width/400), app.height))
+            /300), 0, (i+1)*self.roundHalfUp(app.width/300), app.height))
             self.bckgSlices.append(bckgSlice)
 
     def timerFired(self, app):
@@ -39,31 +39,25 @@ class StartScreen:
         
     def __init__(self, app):
         self.bckgImage = app.loadImage('./assets/newStartSplash.png')
+        self.clickAnywhere = app.loadImage('./assets/clickAnywhere.png')
         self.bckgSlices = []
         self.slicingBckg(app)
     
     def redraw(self, app, canvas):
-        for i in range(400):
-            canvas.create_image(i*(self.roundHalfUp(app.width/400)), 0, 
+        for i in range(300):
+            canvas.create_image(i*(self.roundHalfUp(app.width/300)), 0, 
             image=ImageTk.PhotoImage(self.bckgSlices[i]), anchor = 'nw')
-
-            # canvas.create_image(app.width//2, app.height//2, 
-            # image=ImageTk.PhotoImage(self.startImage))
+            
+        canvas.create_image(app.width//2,app.height//2,
+        image=ImageTk.PhotoImage(self.clickAnywhere))
 
     def mousePressed(self, app, event):
-        wMargin = app.width//6
-        hMargin = app.height//4
-        (cX, cY) = app.width//2, app.height//2
-
-        if event.x >= cX-wMargin and event.x <= cX+wMargin:
-            if event.y >= cY-hMargin and event.y <= cY+hMargin:
-                app.game = Game()
-                app.game.startGame(app)
-                app.mode = 'game'
+        app.game = Game()
+        app.game.startGame(app)
+        app.mode = 'game'
 
 
     def keyPressed(self, app, event):
-        if event.key == 'w':
-            app.game = Game()
-            app.game.startGame(app)
-            app.mode = 'game'
+        app.game = Game()
+        app.game.startGame(app)
+        app.mode = 'game'
