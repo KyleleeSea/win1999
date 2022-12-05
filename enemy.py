@@ -74,18 +74,23 @@ class Enemy:
             self.huntAnim.append(animation)
 
         self.followAnim = []
-        (startY, endY) = getYs(9)
-        for i in range(2,11):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
+        for i in range(1,6):
+            path = f'./assets/enemy{i}.png'
+            animation = app.loadImage(path)
             self.followAnim.append(animation)
-        for i in range(11,3,-1):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.followAnim.append(animation)
+        # (startY, endY) = getYs(9)
+        # for i in range(2,11):
+        #     animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+        #     endY, spritesheet, app)
+        #     self.followAnim.append(animation)
+        # for i in range(11,3,-1):
+        #     animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
+        #     endY, spritesheet, app)
+        #     self.followAnim.append(animation)
 
-        self.spriteVisual = Sprite(self.wanderAnim[0], 48, self.row, self.col,
+        self.spriteVisual = Sprite(self.wanderAnim[0], 64, self.row, self.col,
         app)
+        # 48 if bonzi
 
 # Controller 
     def spawn(self, app):

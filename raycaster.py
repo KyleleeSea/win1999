@@ -189,7 +189,7 @@ class Raycaster:
             app.player.yPos)
 
             # 80 is a constant chosen to make reasonable divisor
-            divisor = playerToSliceDist/80
+            divisor = playerToSliceDist/50
             if divisor < 1:
                 divisor = 1
             elif divisor > 7:
