@@ -1,7 +1,7 @@
 from cmu_112_graphics import *
 from helpers import *
 from backgroundLogic import *
-from footstepSound import *
+from dynamicSound import *
 import math
 
 class Player:
@@ -52,7 +52,6 @@ class Player:
             self.xPos = newX
             self.yPos = newY
             self.row, self.col = getCell(app, newX, newY, self.maze)
-            adjustBackgroundVolume(app)
             # Commented out next level functionality for MVP
             if app.exitOpen and self.checkExit(self.exitBlock):
                 print('hit')

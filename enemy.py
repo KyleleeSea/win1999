@@ -80,14 +80,12 @@ class Enemy:
 # Actions
     def stare(self, app):
         if self.state == 'stareNotFound':
-            print('staring looking for player')
             if self.checkPlayerNearby(app):
                 self.state = 'stare'
             
             self.follow(app)
         
         if self.state == 'stare':
-            print('staring')
             self.changeVelRunAway(0, 0)
         
         if self.state == 'stareAway':
@@ -340,11 +338,8 @@ class Enemy:
             self.currentInterval += 1
         
         if self.state == 'stare':
-            print(self.currentStareInterval)
-            print(self.state)
             self.currentStareInterval += 1
             if self.currentStareInterval >= self.stareIntervals:
-                print('go away')
                 self.state = 'stareAway'
                 self.currentStareInterval = 0
                 goTo = self.spawn(app, 5)

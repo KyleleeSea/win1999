@@ -4,7 +4,7 @@ from cmu_112_graphics import *
 from maze import *
 from exitBlock import *
 from player import *
-from footstepSound import *
+from dynamicSound import *
 from backgroundLogic import *
 from enemy import *
 from playerShadow import *
@@ -76,7 +76,9 @@ class Game:
         app.playerShadow = PlayerShadow(app)
 
         # https://obsydianx.itch.io/horror-sfx-volume-1
-        app.backgroundSound = footstepSound('./assets/footsteps.mp3') 
+        app.backgroundSound = dynamicSound('./assets/footsteps.mp3', 1000) 
+        # https://www.youtube.com/watch?v=zzXw1E1dX-w
+        app.mommySound = dynamicSound('./assets/mommy.mp3', 400)
         # https://www.youtube.com/watch?v=F2hvl2iOI8k
         app.collisionSound = Sound('./assets/collision.mp3')
         # https://freetts.com/
@@ -125,6 +127,7 @@ class Game:
 
     def timerFired(self, app):    
         self.gameFlow(app)    
+        adjustBackgroundVolume(app)
 
         # in backgroundLogic
         # checkCollision(app)
@@ -139,6 +142,16 @@ class Game:
     def keyPressed(self, app, event):
         app.player.keyPressed(app, event)
 
+    def drawStartText(self, app, canvas):
+        if app.secondCounter in range(2,4):
+            canvas.create_text(app.width//2, app.height-100, 
+            text='To move your drone use the WASD keys', 
+            fill=rgbString(255,204,0), font='Helvetica 26 bold')
+        if app.secondCounter in range(4, 7):
+            canvas.create_text(app.width//2, app.height-100, 
+            text="To change the drone's camera angle use the keys K and L", 
+            fill=rgbString(255,204,0), font='Helvetica 26 bold')
+
     def redraw(self, app, canvas):
         app.raycaster.redraw(app, canvas)
         # displayTimeLeft(app, canvas)
@@ -150,6 +163,8 @@ class Game:
         app.enemy.redraw(app, canvas)
         # in backgroundLogic
         # drawCollision(app, canvas)
+        self.drawStartText(app, canvas)
 
     def appStopped(self, app):
         app.backgroundSound.appStopped(app)
+        app.mommySound.appStopped(app)
