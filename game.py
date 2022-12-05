@@ -100,7 +100,7 @@ class Game:
         app.collisionImage = app.loadImage('./assets/bonziLooking.png')
         app.death = Death(app)
 
-        app.secondsToWin = 3*60
+        app.secondsToWin = 2*60
         msToWin = app.secondsToWin*1000
         app.winIntervals = msToWin//app.timerDelay
         app.currentWinInterval = 0
@@ -126,14 +126,16 @@ class Game:
 
 
     def timerFired(self, app):    
-        self.gameFlow(app)    
+        self.gameFlow(app) 
         adjustBackgroundVolume(app)
 
         # in backgroundLogic
-        # checkCollision(app)
+        if app.secondCounter > 120:
+            checkCollision(app)
         if app.exitOpen != True:
             checkWinTimer(app)
-        app.enemy.timerFired(app)
+        if app.secondCounter > 20:
+            app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
 
     # def mouseMoved(self, app, event):
@@ -154,7 +156,6 @@ class Game:
 
     def redraw(self, app, canvas):
         app.raycaster.redraw(app, canvas)
-        # displayTimeLeft(app, canvas)
         
         # Commented out 2d representation debugging code
         app.maze.redraw(app, canvas)

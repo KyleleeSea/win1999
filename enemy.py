@@ -22,7 +22,7 @@ class Enemy:
         self.lastCol = 1
         self.xVel = 0
         self.yVel = 0
-        self.state = 'stareNotFound'
+        self.state = 'peekToPlayer'
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
@@ -79,6 +79,9 @@ class Enemy:
 # Controller move functions
 # Actions
     def stare(self, app):
+        if app.secondCounter > 120:
+            self.state = 'wandering'
+
         if self.state == 'stareNotFound':
             if self.checkPlayerNearby(app):
                 self.state = 'stare'
@@ -98,6 +101,9 @@ class Enemy:
             self.runAway(app)
 
     def peek(self, app):
+        if app.secondCounter > 60:
+            self.state = 'stareNotFound'
+
         if self.state == 'peekToPlayer':
             if self.checkPlayerNearby(app):
                 self.state = 'peekAway'
