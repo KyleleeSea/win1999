@@ -15,23 +15,28 @@ from sprite import *
 class Enemy:
     def __init__(self, app, maze):
         self.maze = maze
-        self.xPos, self.yPos, self.row, self.col = self.spawn(app)
+        self.xPos, self.yPos, self.row, self.col = self.spawn(app, 3) #change 3
         self.lastX = self.xPos - 500
         self.lastY = self.yPos - 500
         self.lastRow = 1
         self.lastCol = 1
         self.xVel = 0
         self.yVel = 0
-        self.state = 'following'
+        self.state = 'peekToPlayer'
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
         self.wanderSpeed = (app.player.moveVel)*1.5
         self.huntSpeed = (app.player.moveVel)*1.5
         self.followSpeed = (app.player.moveVel)*0.75
+        self.runAwaySpeed = (app.player.moveVel)*3
         # enemySize probably not needed after sprite animated
         self.enemySize = app.player.playerSize
         self.collisionDist = 15
+
+        # For peek and stare
+        self.rowTo = 5
+        self.goTo = 5
 
         # Timer logic for follow
         # only change secondsToWait
@@ -48,59 +53,24 @@ class Enemy:
         startX = 0
         xWidth = 60.23
         self.animationCounter = 0
+        self.allAnim = []
 
-
-        self.wanderAnim = []
-        (startY, endY) = getYs(5)
-        for i in range(7):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.wanderAnim.append(animation)
-        for i in range(10,14):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.wanderAnim.append(animation)
-
-        self.huntAnim = []
-        (startY, endY) = getYs(14)
-        for i in range(8,17):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.huntAnim.append(animation)
-        (startY, endY) = getYs(15)
-        for i in range(8):
-            animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-            endY, spritesheet, app)
-            self.huntAnim.append(animation)
-
-        self.followAnim = []
         for i in range(1,6):
             path = f'./assets/enemy{i}.png'
             animation = app.loadImage(path)
-            self.followAnim.append(animation)
-        # (startY, endY) = getYs(9)
-        # for i in range(2,11):
-        #     animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-        #     endY, spritesheet, app)
-        #     self.followAnim.append(animation)
-        # for i in range(11,3,-1):
-        #     animation = cutSpritesheet(startX, xWidth*i, xWidth, startY, 
-        #     endY, spritesheet, app)
-        #     self.followAnim.append(animation)
+            self.allAnim.append(animation)
 
-        self.spriteVisual = Sprite(self.wanderAnim[0], 64, self.row, self.col,
+        self.spriteVisual = Sprite(self.allAnim[0], 64, self.row, self.col,
         app)
-        # 48 if bonzi
 
 # Controller 
-    def spawn(self, app):
+    def spawn(self, app, dist):
         while True:
             row = random.randint(1, self.maze.size - 1)
             col = random.randint(1, self.maze.size - 1)
             # Check 1) Cell open. 2) Cell reasonably far from player
-            if (self.maze.maze[row][col] == 0 and 
-                (row+col) >= self.maze.size//2 and 
-                (row+col) <= self.maze.size//1.5):
+            if (getDistance(row, col, app.player.row, app.player.col) > dist
+            and app.maze.maze[row][col] == 0):
                 bounds = getCellBounds(row, col, self.maze.maze, app)
                 # Average of bounds to get midpoint
                 xPos = (bounds[0] + bounds[2])//2
@@ -109,8 +79,30 @@ class Enemy:
 
 # Controller move functions
 # Actions
+    def peek(self, app):
+        if self.state == 'peekToPlayer':
+            if self.checkPlayerNearForPeek(app):
+                self.state = 'peekAway'
+                goTo = self.spawn(app, 5)
+                self.rowTo = goTo[2]
+                self.colTo = goTo[3]
+            self.follow(app)
+        
+        if self.state == 'peekAway':
+            # <2 rather than == to avoid bugs regarding edge of cells
+            if getDistance(self.row, self.col, self.rowTo, self.colTo) < 2:
+                self.state = 'peekToPlayer'
+            
+            path = shortestPath((self.row, self.col), 
+            app, (self.rowTo, self.colTo))
+            if len(path) > 0:
+                moveTowardRow, moveTowardCol = path[-1]
+                moveRow, moveCol = (moveTowardRow-self.row, 
+                moveTowardCol-self.col)
+                self.changeVelRunAway(moveCol, moveRow)
+
     def wander(self, app):
-        if self.checkFullStraightLine(app):
+        if self.check2LenStraightLine(app):
             self.visited = set()
             self.movingBack = []
             self.state = 'following'
@@ -191,7 +183,9 @@ class Enemy:
 # https://isaaccomputerscience.org/concepts/dsa_search_a_star
 # https://www.youtube.com/watch?v=-L-WgKMFuhE
     def follow(self, app):
-        if self.currentInterval >= self.followIntervals:
+        # Also check and state==following because function used in peek & stare
+        if (self.currentInterval >= self.followIntervals
+         and self.state=='following'):
             self.currentInterval = 0
             self.state = 'wandering'
         
@@ -202,16 +196,28 @@ class Enemy:
             self.changeVelFollow(moveCol, moveRow)
 
 # Action Helpers
+    def checkPlayerNearForPeek(self, app):
+        if self.checkFullStraightLine(app):
+            return True
+
+        dist = getDistance(self.row, self.col, app.player.row, app.player.col)
+        if dist < 4:
+            return True
+
+        return False
+
     def checkFullStraightLine(self, app):
-        dirs = [(0,1), (0, -1), (1,0), (-1, 0)]
+        dirs = [(0,1), (0, -1), (1,0), (-1, 0), (-1,1), (-1,-1),(1,1),(1,-1)]
         for direction in dirs:
             newRow = self.row + direction[0]
             newCol = self.col + direction[1]
-            while app.maze.maze[newRow][newCol] != 1:
-                if (app.player.row, app.player.col) == (newRow, newCol):
-                    return True
-                newRow += direction[0]
-                newCol += direction[1]
+            if (newRow < 0 and newRow >= len(app.maze.maze) and 
+            newCol < 0 and newCol >= len(app.maze.maze)):
+                while app.maze.maze[newRow][newCol] != 1:
+                    if (app.player.row, app.player.col) == (newRow, newCol):
+                        return True
+                    newRow += direction[0]
+                    newCol += direction[1]
         return False
 
     def check2LenStraightLine(self, app):
@@ -253,6 +259,10 @@ class Enemy:
         self.xVel = self.followSpeed*xChange
         self.yVel = self.followSpeed*yChange
 
+    def changeVelRunAway(self, xChange, yChange):
+        self.xVel = self.runAwaySpeed*xChange
+        self.yVel = self.runAwaySpeed*yChange
+
     def isInBounds(self, row, col):
         if (row >= 0 and row < len(self.maze.maze) and col >= 0 and 
         col < len(self.maze.maze)):
@@ -281,23 +291,10 @@ class Enemy:
 
 # Action logic
     def animationUpdates(self, app):
-        if self.state == 'wandering':
-            self.animationCounter += 1
-            if self.animationCounter >= len(self.wanderAnim):
-                self.animationCounter = 0
-            self.spriteVisual.image = self.wanderAnim[self.animationCounter]
-        elif self.state == 'hunting' or self.state == 'startHunting':
-            self.animationCounter += 1 
-
-            if self.animationCounter >= len(self.huntAnim):
-                self.animationCounter = 0
-            self.spriteVisual.image = self.huntAnim[self.animationCounter]
-        elif self.state == 'following':
-            self.animationCounter += 1 
-
-            if self.animationCounter >= len(self.followAnim):
-                self.animationCounter = 0
-            self.spriteVisual.image = self.followAnim[self.animationCounter]
+        self.animationCounter += 1
+        if self.animationCounter >= len(self.allAnim):
+            self.animationCounter = 0
+        self.spriteVisual.image = self.allAnim[self.animationCounter]
 
     def movementUpdates(self, app):
         # Only update state if in new row or new col
@@ -330,7 +327,6 @@ class Enemy:
         self.animationUpdates(app)
         self.movementUpdates(app)
 
-
     def changeState(self, app):
         if self.state == 'wandering':
             self.wander(app)
@@ -340,6 +336,8 @@ class Enemy:
             self.hunt(app)
         elif self.state == 'following':
             self.follow(app)
+        elif self.state == 'peekToPlayer' or self.state == 'peekAway':
+            self.peek(app)
 
 # View 2D (visual representation for 3D)
     def redraw(self, app, canvas):

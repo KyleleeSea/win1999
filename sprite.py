@@ -1,3 +1,6 @@
+# https://wynnliam.github.io/raycaster/news/tutorial/2019/04/03/
+# raycaster-part-02.html
+# https://lodev.org/cgtutor/raycasting3.html
 # https://www.youtube.com/watch?v=kyI-Ken7aAk
 
 from cmu_112_graphics import *
