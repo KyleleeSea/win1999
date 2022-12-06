@@ -54,7 +54,6 @@ class Player:
             self.row, self.col = getCell(app, newX, newY, self.maze)
             # Commented out next level functionality for MVP
             if app.exitOpen and self.checkExit(self.exitBlock):
-                print('hit')
                 app.mode = 'win'
         # Row col updating for shadow logic
         if self.row != self.lastRow or self.col != self.lastCol:

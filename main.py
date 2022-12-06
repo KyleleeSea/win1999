@@ -60,10 +60,7 @@ def win_keyPressed(app, event):
 # Game screen
 def game_timerFired(app):
     app.game.timerFired(app)
-
-# def game_mouseMoved(app, event):
-#     app.game.mouseMoved(app, event)
-
+    
 def game_keyPressed(app, event):
     app.game.keyPressed(app, event)
 
@@ -73,4 +70,4 @@ def game_redrawAll(app, canvas):
 def appStopped(app):
     pygame.mixer.stop()
 
-runApp(width=1500, height=900)
+runApp(width=1500, height=600)

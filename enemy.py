@@ -15,7 +15,7 @@ from sprite import *
 class Enemy:
     def __init__(self, app, maze):
         self.maze = maze
-        self.xPos, self.yPos, self.row, self.col = self.spawn(app, 3) #change 3
+        self.xPos, self.yPos, self.row, self.col = self.spawn(app, 15) #change 3
         self.lastX = self.xPos - 500
         self.lastY = self.yPos - 500
         self.lastRow = 1

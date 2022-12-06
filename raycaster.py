@@ -23,7 +23,7 @@ class Raycaster:
         self.FOV = 60
         self.playerHeight = app.wallHeight/2
 
-        self.numRays = 500
+        self.numRays = 320
         self.angleBetweenRays = self.FOV/self.numRays
         self.baseWallColor = (189, 191, 163)
         self.baseSkyAndGroundColor = rgbString(37, 38, 38)
@@ -166,32 +166,28 @@ class Raycaster:
 
     def wallShadeFormula(self, px, py, app):
         (row, col) = getCell(app, px, py, app.maze.maze)
-        if (row, col) == (app.enemy.row, app.enemy.col):
+        if ((app.player.row, app.player.col) == 
+        (app.enemy.row, app.enemy.col)):
             self.baseSkyAndGroundColor = rgbString(0, 0, 0)
-            return rgbString(0, 0, 0)
         else:
-            if ((app.player.row, app.player.col) == 
-            (app.enemy.row, app.enemy.col)):
-                self.baseSkyAndGroundColor = rgbString(0, 0, 0)
-            else:
-                self.baseSkyAndGroundColor = rgbString(69, 69, 69)
+            self.baseSkyAndGroundColor = rgbString(69, 69, 69)
 
-            playerToSliceDist = getDistance(px, py, app.player.xPos, 
-            app.player.yPos)
+        playerToSliceDist = getDistance(px, py, app.player.xPos, 
+        app.player.yPos)
 
-            # 80 is a constant chosen to make reasonable divisor
-            divisor = playerToSliceDist/50
-            if divisor < 1:
-                divisor = 1
-            elif divisor > 7:
-                return rgbString(0, 0, 0)                
-            
-            # For both divisior = 1 and divisior < 7
-            wallColor = []
-            for part in self.baseWallColor:
-                wallColor.append(int(part/divisor))
-            wallColor = rgbString(wallColor[0], wallColor[1], wallColor[2])
-            return wallColor
+        # 80 is a constant chosen to make reasonable divisor
+        divisor = playerToSliceDist/50
+        if divisor < 1:
+            divisor = 1
+        elif divisor > 7:
+            return rgbString(0, 0, 0)                
+        
+        # For both divisior = 1 and divisior < 7
+        wallColor = []
+        for part in self.baseWallColor:
+            wallColor.append(int(part/divisor))
+        wallColor = rgbString(wallColor[0], wallColor[1], wallColor[2])
+        return wallColor
 
     def verticalRightRay(self, app, angle):
     # end variable first arg: True or False condition. second arg: distance
@@ -272,6 +268,3 @@ class Raycaster:
 
     def redraw(self, app, canvas):
         self.drawScene(app, canvas)
-
-        # for sprite in app.sprites:
-        #     sprite.redraw(app, canvas)

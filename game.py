@@ -66,7 +66,7 @@ class Game:
         app.wallHeight = (1/3)*app.height
         app.distToPlane = (app.width/2)*math.tan(math.radians(30))
 
-        app.maze = Maze(15) #prev 15 # end game like size 25?
+        app.maze = Maze(25) #prev 15 # end game like size 25?
         app.level = 1
         exitBlockProportion = 0.6
         app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)
@@ -116,7 +116,9 @@ class Game:
 
 # Game Logic
     def gameFlow(self, app):
+        print(app.secondCounter)
         app.currentSecondInterval += 1
+
         if app.currentSecondInterval >= app.intervalsPerSecond:
             app.secondCounter += 1
             app.currentSecondInterval = 1
@@ -125,7 +127,8 @@ class Game:
             self.playingLegalSound = True
 
 
-    def timerFired(self, app):    
+    def timerFired(self, app):
+        # print(app.secondCounter)    
         self.gameFlow(app) 
         adjustBackgroundVolume(app)
 
@@ -134,12 +137,9 @@ class Game:
             checkCollision(app)
         if app.exitOpen != True:
             checkWinTimer(app)
-        if app.secondCounter > 20:
+        if app.secondCounter > 15:
             app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
-
-    # def mouseMoved(self, app, event):
-    #     app.player.mouseMoved(app, event)
 
     def keyPressed(self, app, event):
         app.player.keyPressed(app, event)
@@ -158,10 +158,10 @@ class Game:
         app.raycaster.redraw(app, canvas)
         
         # Commented out 2d representation debugging code
-        app.maze.redraw(app, canvas)
-        app.exitBlock.redraw(app, canvas)
-        app.player.redraw(app, canvas)
-        app.enemy.redraw(app, canvas)
+        # app.maze.redraw(app, canvas)
+        # app.exitBlock.redraw(app, canvas)
+        # app.player.redraw(app, canvas)
+        # app.enemy.redraw(app, canvas)
         # in backgroundLogic
         # drawCollision(app, canvas)
         self.drawStartText(app, canvas)
