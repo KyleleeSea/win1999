@@ -55,22 +55,3 @@ def checkCollision(app):
             app.collisionCounter += 1
     else:
         app.collisionCounter = 0
-
-def drawCollision(app, canvas):
-    # Image loaded in game
-    if app.collisionCounter > 0:
-        canvas.create_image(app.width//2, app.height//2, 
-            image=ImageTk.PhotoImage(app.collisionImage))
-
-def checkWinTimer(app):
-    app.currentWinInterval += 1
-    app.timeRemaining = (app.secondsToWin-
-        ((app.currentWinInterval*app.timerDelay)//1000))
-    if app.currentWinInterval >= app.winIntervals:
-        app.exitOpen = True
-    
-def displayTimeLeft(app, canvas):
-    # print(app.timeRemaining)
-    canvas.create_text(app.width//2, 50, 
-    text=f'seconds to survive: {app.timeRemaining}',
-        fill='white', font='Helvetica 26')

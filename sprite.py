@@ -6,7 +6,6 @@
 from cmu_112_graphics import *
 from helpers import *
 import math
-from raycaster import *
 
 class Sprite:
     def __init__(self, path, baseSize, row, col, app):
@@ -25,8 +24,6 @@ class Sprite:
         self.xPos = (bounds[0] + bounds[2])//2
         self.yPos = (bounds[1] + bounds[3])//2
 
-        self.raycasterHelper = Raycaster(app, app.maze)
-
 # returnX error moves left when player looks left, when should be
 # moving right
     def getSpriteCoords(self, app):
@@ -36,17 +33,19 @@ class Sprite:
         p = (math.degrees(math.atan2(-hY, hX)))%360
 
         q = app.player.angle-90 + (fov/2) - p
-        if (app.player.angle >= 0 and app.player.angle <= 90 and 
-        p >= 270 and p <= 360):
+
+        if ((app.player.angle >= 0 and app.player.angle <= 110) and 
+        (p >= 270 and p <= 360)):
             q += 360
-        if (app.player.angle >= 270 and app.player.angle <= 360 and
-        p >= 0 and p <= 90):
+        if ((app.player.angle >= 270 and app.player.angle <= 360) and
+        (p >= 0 and p <= 90)):
             q -= 360
+        # print(f'hX {hX} hY {hY} p {p} q {q}')
 
         # APP.WIDTH - SOLVES DIRECTION ERROR
         returnX = app.width - (q * (app.width / fov))
         returnY = app.height / 2
-        
+        # print(returnX)
         return (returnX, returnY)
 
     def getSpriteDims(self, app):
@@ -63,29 +62,6 @@ class Sprite:
             return True
         return False
         
-    # this is broken
-    def notBehindWall(self, app):
-        if app.player.xPos >= self.xPos:
-            xLen = app.player.xPos - self.xPos
-        else:
-            xLen = self.xPos - app.player.xPos
-
-        if app.player.yPos >= self.yPos:
-            yLen = app.player.yPos - self.yPos
-        else:
-            yLen = self.yPos - app.player.yPos 
-        # https://www.w3schools.com/python/ref_math_atan.asp
-        anglePlayertoSprite = math.degrees(math.atan(yLen/(xLen+1)))
-        ray = self.raycasterHelper.getRay(app, anglePlayertoSprite)
-        rayDist = ray['dist']
-        dist = getDistance(app.player.xPos, app.player.yPos,
-        self.xPos, self.yPos)
-        
-        if rayDist < dist:
-            return False
-        else:
-            return True
-    
     def redraw(self, app, canvas):
         (x, y) = self.getSpriteCoords(app)
         sprite3DSize = self.getSpriteDims(app)/self.baseSize

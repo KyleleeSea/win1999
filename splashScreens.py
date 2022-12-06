@@ -13,7 +13,7 @@ class Death:
         self.deadImage = app.loadImage('./assets/newDeadScreen.png')
         self.counter = 0
         self.countTo = 13
-        self.ind = random.randint(1,9)
+        self.ind = random.randint(0,8)
 
         self.deathImages = []
         self.deathGlitchImages = []
@@ -36,7 +36,7 @@ class Death:
             canvas.create_image(app.width//2, app.height//2, 
             image=ImageTk.PhotoImage(self.deathGlitchImages[self.ind]))
 
-            self.ind = random.randint(1,9)
+            self.ind = random.randint(0,8)
 
         elif self.counter >= 7 and self.counter <= 10:
             canvas.create_image(app.width//2, app.height//2, 
@@ -46,7 +46,7 @@ class Death:
             canvas.create_image(app.width//2, app.height//2, 
             image=ImageTk.PhotoImage(self.deathGlitchImages[self.ind]))
 
-            self.ind = random.randint(1,9)
+            self.ind = random.randint(0,8)
 
     def redraw(self, app, canvas):
         self.deathAnimation(app, canvas)

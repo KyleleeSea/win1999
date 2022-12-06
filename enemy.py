@@ -15,7 +15,7 @@ from sprite import *
 class Enemy:
     def __init__(self, app, maze):
         self.maze = maze
-        self.xPos, self.yPos, self.row, self.col = self.spawn(app, 15) #change 3
+        self.xPos, self.yPos, self.row, self.col = self.spawn(app, 15, 35)
         self.lastX = self.xPos - 500
         self.lastY = self.yPos - 500
         self.lastRow = 1
@@ -30,6 +30,7 @@ class Enemy:
         self.huntSpeed = (app.player.moveVel)*1.5
         self.followSpeed = (app.player.moveVel)*0.75
         self.runAwaySpeed = (app.player.moveVel)*3
+        self.peekAndStareFar = (app.player.moveVel)*2
         # enemySize probably not needed after sprite animated
         self.enemySize = app.player.playerSize
         self.collisionDist = 15
@@ -63,12 +64,14 @@ class Enemy:
         app)
 
 # Controller 
-    def spawn(self, app, dist):
+    def spawn(self, app, lowerBound, upperBound):
         while True:
             row = random.randint(1, self.maze.size - 1)
             col = random.randint(1, self.maze.size - 1)
             # Check 1) Cell open. 2) Cell reasonably far from player
-            if (getDistance(row, col, app.player.row, app.player.col) > dist
+            distFromPlayer = getDistance(row, col, app.player.row, 
+            app.player.col)
+            if (distFromPlayer > lowerBound and distFromPlayer < upperBound
             and app.maze.maze[row][col] == 0):
                 bounds = getCellBounds(row, col, self.maze.maze, app)
                 # Average of bounds to get midpoint
@@ -107,7 +110,7 @@ class Enemy:
         if self.state == 'peekToPlayer':
             if self.checkPlayerNearby(app):
                 self.state = 'peekAway'
-                goTo = self.spawn(app, 5)
+                goTo = self.spawn(app, 8, 15)
                 self.rowTo = goTo[2]
                 self.colTo = goTo[3]
             self.follow(app)
@@ -211,7 +214,13 @@ class Enemy:
             moveTowardRow, moveTowardCol = shortestPath((self.row, self.col), 
             app, (app.player.row, app.player.col))[-1]
             moveRow, moveCol = (moveTowardRow-self.row, moveTowardCol-self.col)
-            self.changeVelFollow(moveCol, moveRow)
+
+            if ((self.state == 'stareNotFound' or self.state == 'peekToPlayer')
+            and getDistance(self.row, self.col, app.player.row, app.player.col)
+            > 6):
+                self.changeVelPeekAndStareFar(moveCol, moveRow)
+            else:
+                self.changeVelFollow(moveCol, moveRow)
 
 # Action Helpers
     def runAway(self, app):
@@ -291,6 +300,10 @@ class Enemy:
         self.xVel = self.runAwaySpeed*xChange
         self.yVel = self.runAwaySpeed*yChange
 
+    def changeVelPeekAndStareFar(self, xChange, yChange):
+        self.xVel = self.peekAndStareFar*xChange
+        self.yVel = self.peekAndStareFar*yChange
+
     def isInBounds(self, row, col):
         if (row >= 0 and row < len(self.maze.maze) and col >= 0 and 
         col < len(self.maze.maze)):
@@ -348,7 +361,7 @@ class Enemy:
             if self.currentStareInterval >= self.stareIntervals:
                 self.state = 'stareAway'
                 self.currentStareInterval = 0
-                goTo = self.spawn(app, 5)
+                goTo = self.spawn(app, 8, 15)
                 self.rowTo = goTo[2]
                 self.colTo = goTo[3]
                 self.runAway(app)

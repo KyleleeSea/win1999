@@ -12,6 +12,7 @@ from raycaster import *
 from splashScreens import *
 from sprite import *
 import random
+import time
 
 class Game:
     def __init__(self):
@@ -89,6 +90,7 @@ class Game:
 
         #Init sprites
         app.sprites = self.initSprites(app)
+        # app.sprites = [Sprite(self.otherSprites[3], 16, 1, 3, app) ]
 
         app.raycaster = Raycaster(app, app.maze)
 
@@ -100,71 +102,76 @@ class Game:
         app.collisionImage = app.loadImage('./assets/bonziLooking.png')
         app.death = Death(app)
 
-        app.secondsToWin = 2*60
-        msToWin = app.secondsToWin*1000
-        app.winIntervals = msToWin//app.timerDelay
-        app.currentWinInterval = 0
-        app.timeRemaining = app.secondsToWin
         app.win = Win(app)
         app.exitOpen = False
 
         # Counting something but not seconds? 
         # Seems to be counting like 2/3rds of a second
+        app.lastTime = time.time()
+            
         app.secondCounter = 1
         app.intervalsPerSecond = 1000//app.timerDelay
         app.currentSecondInterval = 1
 
 # Game Logic
     def gameFlow(self, app):
-        print(app.secondCounter)
-        app.currentSecondInterval += 1
-
-        if app.currentSecondInterval >= app.intervalsPerSecond:
+        if time.time() > app.lastTime + 1:
             app.secondCounter += 1
-            app.currentSecondInterval = 1
+            app.lastTime = time.time()
+
         if self.playingLegalSound == False and app.secondCounter == 25:
             app.legalInformationSound.start(0)
             self.playingLegalSound = True
 
-
     def timerFired(self, app):
-        # print(app.secondCounter)    
+        # print(app.player.angle)
         self.gameFlow(app) 
         adjustBackgroundVolume(app)
 
-        # in backgroundLogic
         if app.secondCounter > 120:
             checkCollision(app)
-        if app.exitOpen != True:
-            checkWinTimer(app)
-        if app.secondCounter > 15:
+            app.exitOpen = True
+        if app.secondCounter > 25:
             app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
 
     def keyPressed(self, app, event):
         app.player.keyPressed(app, event)
+        # https://piazza.com/class/l754ykydwsd6yq/post/3469
+        app.game.timerFired(app)
+        if event.key == 'g':
+            app.displayMap = not app.displayMap
 
     def drawStartText(self, app, canvas):
-        if app.secondCounter in range(2,4):
+        if app.secondCounter in range(4,8):
             canvas.create_text(app.width//2, app.height-100, 
             text='To move your drone use the WASD keys', 
             fill=rgbString(255,204,0), font='Helvetica 26 bold')
-        if app.secondCounter in range(4, 7):
+        if app.secondCounter in range(8, 12):
             canvas.create_text(app.width//2, app.height-100, 
             text="To change the drone's camera angle use the keys K and L", 
             fill=rgbString(255,204,0), font='Helvetica 26 bold')
 
     def redraw(self, app, canvas):
-        app.raycaster.redraw(app, canvas)
         
-        # Commented out 2d representation debugging code
-        # app.maze.redraw(app, canvas)
-        # app.exitBlock.redraw(app, canvas)
-        # app.player.redraw(app, canvas)
-        # app.enemy.redraw(app, canvas)
-        # in backgroundLogic
-        # drawCollision(app, canvas)
+        app.raycaster.redraw(app, canvas)
         self.drawStartText(app, canvas)
+
+        # Commented out 2d representation debugging code
+        if app.displayMap:
+            app.maze.redraw(app, canvas)
+            app.exitBlock.redraw(app, canvas)
+            app.player.redraw(app, canvas)
+            app.enemy.redraw(app, canvas)
+
+            canvas.create_text(app.width//2, app.height//2, text=f"{app.secondCounter}",
+            fill='white')
+
+            canvas.create_text(app.width//2, -100 + app.height//2, text=f"{app.player.angle}",
+            fill='green')
+
+            canvas.create_text(app.width - 100, 100, text='g to toggle minimap',
+            fill='white')
 
     def appStopped(self, app):
         app.backgroundSound.appStopped(app)

@@ -23,7 +23,7 @@ class Raycaster:
         self.FOV = 60
         self.playerHeight = app.wallHeight/2
 
-        self.numRays = 320
+        self.numRays = 400
         self.angleBetweenRays = self.FOV/self.numRays
         self.baseWallColor = (189, 191, 163)
         self.baseSkyAndGroundColor = rgbString(37, 38, 38)
@@ -44,6 +44,7 @@ class Raycaster:
                 sprite.xPos, sprite.yPos)
                 spriteDict = {'dist': dist, 'type': 'sprite', 'obj': sprite}
                 spriteList.append(spriteDict)
+        # print(spriteList[0]['obj'].getSpriteCoords(app))
         return spriteList
 
     def drawScene(self, app, canvas):
@@ -135,10 +136,12 @@ class Raycaster:
             distVer = self.verticalRightRay(app, angle)
         else:
             distVer = self.verticalLeftRay(app, angle)
+        # https://stackoverflow.com/questions/66644579/how-do-i-fix-warped-walls-in-my-raycaster
+        fisheyeAdjuster = math.cos(math.radians(angle-app.player.angle))
         if distHor[2] < distVer[2]:
-            return {'dist': distHor[2], 'wallColor': distHor[3]}
+            return {'dist': distHor[2]*fisheyeAdjuster, 'wallColor': distHor[3]}
         else:
-            return {'dist': distVer[2], 'wallColor': distVer[3]}
+            return {'dist': distVer[2]*fisheyeAdjuster, 'wallColor': distVer[3]}
 
 # rAdj and cAdj needed because intersection checks top most cell, causing
 # errors in cases Vertical Left and Horizontal up. 
@@ -179,8 +182,8 @@ class Raycaster:
         divisor = playerToSliceDist/50
         if divisor < 1:
             divisor = 1
-        elif divisor > 7:
-            return rgbString(0, 0, 0)                
+        # elif divisor > 12:
+        #     return rgbString(0, 0, 0)                
         
         # For both divisior = 1 and divisior < 7
         wallColor = []

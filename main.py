@@ -11,6 +11,7 @@ def appStarted(app):
     app.mode = 'start'
     app.start = StartScreen(app)
     app.shortestPath = []
+    app.displayMap = False
     # app.game initialized upon starting in start screen
 
     #Init audio
@@ -70,4 +71,4 @@ def game_redrawAll(app, canvas):
 def appStopped(app):
     pygame.mixer.stop()
 
-runApp(width=1500, height=600)
+runApp(width=1500, height=700)

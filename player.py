@@ -27,14 +27,20 @@ class Player:
         self.playerSize = int(app.cellWidth//5)
 
     def adjustAngle(self, direction):
-        # self.angle = (self.angle - angleDiff) % 360
         if direction == 'clockwise':
-            self.angle = (self.angle + self.angleVel) % 360
+            newAngle = (self.angle + self.angleVel)
+            if newAngle > 360:
+                self.angle = newAngle - 360
+            else:
+                self.angle = newAngle
         
-        elif direction == 'counterclockwise' and self.angle >= 5:
+        elif direction == 'counterclockwise' and self.angle > self.angleVel:
             self.angle = (self.angle - self.angleVel)
         
-        elif direction == 'counterclockwise' and self.angle <= 0:
+        elif direction == 'counterclockwise' and self.angle == self.angleVel:
+            self.angle = 360
+        
+        elif direction == 'counterclockwise' and self.angle < self.angleVel:
             self.angle = 360 - self.angleVel
 
     def movePlayer(self, app, direction):
@@ -80,7 +86,6 @@ class Player:
             self.adjustAngle('clockwise')
         elif event.key == 'k':
             self.adjustAngle('counterclockwise')
-        
 
     def mouseMoved(self, app, event):
         if self.lastMousePos == None:
