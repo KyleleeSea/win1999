@@ -3,7 +3,8 @@ from splashScreens import *
 from startScreen import *
 from soundClass import *
 import sys
-#https://www.geeksforgeeks.org/python-handling-recursion-limit/
+# https://www.geeksforgeeks.org/python-handling-recursion-limit/
+# Stops TkInter recursion limit crash
 sys.setrecursionlimit(10**6)
 
 def appStarted(app):
@@ -71,4 +72,4 @@ def game_redrawAll(app, canvas):
 def appStopped(app):
     pygame.mixer.stop()
 
-runApp(width=1500, height=700)
+runApp(width=1500, height=900)

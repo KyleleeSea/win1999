@@ -9,6 +9,7 @@ import math
 
 class Sprite:
     def __init__(self, path, baseSize, row, col, app):
+        self.path = path
         if type(path) == str:
             self.image = app.loadImage(path)
         # for case enemy
@@ -66,7 +67,12 @@ class Sprite:
         (x, y) = self.getSpriteCoords(app)
         sprite3DSize = self.getSpriteDims(app)/self.baseSize
         # print(sprite3DSize)
-        if sprite3DSize < 45: # try lower #s later 
+        if sprite3DSize < 45 or self.path != './assets/exitSprite.png': 
+            # try lower #s later 
+            image3D = app.scaleImage(self.image, sprite3DSize)
+            canvas.create_image(x, 
+            y, image=ImageTk.PhotoImage(image3D))
+        elif self.path == './assets/exitSprite.png':
             image3D = app.scaleImage(self.image, sprite3DSize)
             canvas.create_image(x, 
             y, image=ImageTk.PhotoImage(image3D))

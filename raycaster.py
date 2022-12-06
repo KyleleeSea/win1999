@@ -44,6 +44,7 @@ class Raycaster:
                 sprite.xPos, sprite.yPos)
                 spriteDict = {'dist': dist, 'type': 'sprite', 'obj': sprite}
                 spriteList.append(spriteDict)
+            
         # print(spriteList[0]['obj'].getSpriteCoords(app))
         return spriteList
 
@@ -136,7 +137,8 @@ class Raycaster:
             distVer = self.verticalRightRay(app, angle)
         else:
             distVer = self.verticalLeftRay(app, angle)
-        # https://stackoverflow.com/questions/66644579/how-do-i-fix-warped-walls-in-my-raycaster
+        # https://stackoverflow.com/questions/66644579/how-do-i-fix-warped-
+        # walls-in-my-raycaster Caspian Ahlberg answer
         fisheyeAdjuster = math.cos(math.radians(angle-app.player.angle))
         if distHor[2] < distVer[2]:
             return {'dist': distHor[2]*fisheyeAdjuster, 'wallColor': distHor[3]}

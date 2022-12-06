@@ -51,6 +51,7 @@ class Enemy:
 
         # Implementation inspired by my previous work for Hack112
         # https://github.com/KyleleeSea/slashnbash/blob/main/earth_enemy.py
+        # https://danaida.itch.io/animated-monsters-pack
         # Load spritesheets
         self.animationCounter = 0
         self.allAnim = []
@@ -238,7 +239,7 @@ class Enemy:
             return True
 
         dist = getDistance(self.row, self.col, app.player.row, app.player.col)
-        if dist < 4:
+        if dist < 3:
             return True
 
         return False

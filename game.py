@@ -35,6 +35,7 @@ class Game:
         './assets/wheelBarrowSprite.png']
 
         self.playingLegalSound = False
+        self.playingDoorSound = False
 
     def initSprites(self, app):
         spritesList = [app.enemy.spriteVisual]
@@ -67,7 +68,7 @@ class Game:
         app.wallHeight = (1/3)*app.height
         app.distToPlane = (app.width/2)*math.tan(math.radians(30))
 
-        app.maze = Maze(25) #prev 15 # end game like size 25?
+        app.maze = Maze(15) #prev 15 # end game like size 25?
         app.level = 1
         exitBlockProportion = 0.6
         app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)
@@ -87,6 +88,7 @@ class Game:
         app.introSound.start(0)
         # https://freetts.com/
         app.legalInformationSound = Sound('./assets/introVoice2.mp3')
+        app.doorSound = Sound('./assets/introVoice3.mp3')
 
         #Init sprites
         app.sprites = self.initSprites(app)
@@ -119,7 +121,10 @@ class Game:
             app.secondCounter += 1
             app.lastTime = time.time()
 
-        if self.playingLegalSound == False and app.secondCounter == 25:
+        if self.playingDoorSound == False and app.secondCounter == 25:
+            app.doorSound.start(0)
+            self.playingDoorSound = True
+        if self.playingLegalSound == False and app.secondCounter == 40:
             app.legalInformationSound.start(0)
             self.playingLegalSound = True
 
@@ -128,9 +133,11 @@ class Game:
         self.gameFlow(app) 
         adjustBackgroundVolume(app)
 
-        if app.secondCounter > 120:
-            checkCollision(app)
+        if app.secondCounter >= 120 and app.exitOpen != True:
             app.exitOpen = True
+            app.sprites.append(app.exitBlock.spriteRepresentation)
+        if app.secondCounter > 120:
+             checkCollision(app)
         if app.secondCounter > 25:
             app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
@@ -138,6 +145,7 @@ class Game:
     def keyPressed(self, app, event):
         app.player.keyPressed(app, event)
         # https://piazza.com/class/l754ykydwsd6yq/post/3469
+        # ^ Explanation for why calling timerFired in keyPressed
         app.game.timerFired(app)
         if event.key == 'g':
             app.displayMap = not app.displayMap
@@ -145,11 +153,11 @@ class Game:
     def drawStartText(self, app, canvas):
         if app.secondCounter in range(4,8):
             canvas.create_text(app.width//2, app.height-100, 
-            text='To move your drone use the WASD keys', 
+            text='To move your drone press or hold the WASD keys', 
             fill=rgbString(255,204,0), font='Helvetica 26 bold')
         if app.secondCounter in range(8, 12):
             canvas.create_text(app.width//2, app.height-100, 
-            text="To change the drone's camera angle use the keys K and L", 
+            text="To change the drone's camera angle press of hold the keys K and L", 
             fill=rgbString(255,204,0), font='Helvetica 26 bold')
 
     def redraw(self, app, canvas):

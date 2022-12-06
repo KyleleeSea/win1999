@@ -17,8 +17,8 @@ class Player:
         #Make player slower by increasing denominator of moveVel 
         (startX0, startY0, startX1, startY1) = getCellBounds(1, 1, self.maze, 
         app)
-        self.xPos = int((startX0 + startX1)//2)
-        self.yPos = int((startY0 + startY1)//2)
+        self.xPos = ((startX0 + startX1)/2)
+        self.yPos = ((startY0 + startY1)/2)
         self.row = 1
         self.col = 1
         self.lastRow = 1
@@ -96,7 +96,7 @@ class Player:
             self.adjustAngle(diff//self.mouseSensitivityDenominator)
 
     def checkExit(self, exitBlock):
-        if exitBlock.row == self.row and exitBlock.col == self.col:
+        if (self.row, self.col) == (exitBlock.row, exitBlock.col):
             return True
         return False
 

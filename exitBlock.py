@@ -13,15 +13,12 @@ class exitBlock:
         self.xPos = (x1 + x0)//2
         self.yPos = (y1 + y0)//2
 
-        self.spriteRepresentation = Sprite('./assets/exitSprite.png', 64,
+        self.spriteRepresentation = Sprite('./assets/exitSprite.png', 16,
         self.row, self.col, app)
     
     def redraw(self, app, canvas):
         (x0, y0, x1, y1) = getCellBounds(self.row, self.col, self.maze, app)
         canvas.create_oval(x0//7, y0//7, x1//7, y1//7, fill='green')
-
-        if app.exitOpen:
-            self.spriteRepresentation.redraw(app, canvas)
 
 def createExitCoords(maze, proportion):
     (rows, cols) = (len(maze), len(maze[0]))
