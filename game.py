@@ -119,6 +119,7 @@ class Game:
         app.intervalsPerSecond = 1000//app.timerDelay
         app.currentSecondInterval = 1
 
+        app.previousKey = None
 
 # Game Logic
     def gameFlow(self, app):
@@ -140,7 +141,6 @@ class Game:
             75, image=ImageTk.PhotoImage(app.warningSymbol))
 
     def timerFired(self, app):
-        # print(app.player.angle)
         self.gameFlow(app) 
         adjustBackgroundVolume(app)
 
@@ -156,10 +156,10 @@ class Game:
     def keyPressed(self, app, event):
         app.player.keyPressed(app, event)
         # https://piazza.com/class/l754ykydwsd6yq/post/3469
-        # ^ Explanation for why calling timerFired in keyPressed
-        app.game.timerFired(app)
-        if event.key == 'g':
+        # app.game.timerFired(app)
+        if event.key == 'g' and app.previousKey != 'g':
             app.displayMap = not app.displayMap
+        app.previousKey = event.key
 
     def drawStartText(self, app, canvas):
         if app.secondCounter in range(4,8):

@@ -27,11 +27,11 @@ class Enemy:
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
-        self.wanderSpeed = (app.player.moveVel)*3
-        self.huntSpeed = (app.player.moveVel)*1.5
-        self.followSpeed = (app.player.moveVel)*0.75
-        self.runAwaySpeed = (app.player.moveVel)*3
-        self.peekAndStareFar = (app.player.moveVel)*2
+        self.wanderSpeed = (app.player.moveVel)*3.5
+        self.huntSpeed = (app.player.moveVel)*1.75
+        self.followSpeed = (app.player.moveVel)*1.25
+        self.runAwaySpeed = (app.player.moveVel)*3.5
+        self.peekAndStareFar = (app.player.moveVel)*3.5
         # enemySize probably not needed after sprite animated
         self.enemySize = app.player.playerSize
         self.collisionDist = 15

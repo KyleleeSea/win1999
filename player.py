@@ -14,8 +14,8 @@ class Player:
 
         self.angle = 90
         
-        self.angleVel = 10 #Test
-        self.moveVel = app.cellWidth//15
+        self.angleVel = 5 #Test
+        self.moveVel = app.cellWidth//22
         #Make player slower by increasing denominator of moveVel 
         (startX0, startY0, startX1, startY1) = getCellBounds(1, 1, self.maze, 
         app)

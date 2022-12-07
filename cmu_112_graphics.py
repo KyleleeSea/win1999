@@ -187,15 +187,29 @@ except ModuleNotFoundError: failedImport('requests')
 def getHash(obj):
     # This is used to detect MVC violations in redrawAll
     # @TODO: Make this more robust and efficient
+    # print('obj', obj)
+    # print('Dict:', obj.__dict__)
     try:
+        # print('recurse')
         return getHash(obj.__dict__)
     except:
-        if (isinstance(obj, list)): return getHash(tuple([getHash(v) for v in obj]))
-        elif (isinstance(obj, set)): return getHash(sorted(obj))
-        elif (isinstance(obj, dict)): return getHash(tuple([obj[key] for key in sorted(obj)]))
+        # print('Fail')
+        if (isinstance(obj, list)):
+            # print('listing')
+            return getHash(tuple([getHash(v) for v in obj]))
+        elif (isinstance(obj, set)):
+            # print('seting')
+            return getHash(sorted(obj))
+        elif (isinstance(obj, dict)):
+            # print('dicting')
+            return getHash(tuple([obj[key] for key in sorted(obj)]))
         else:
-            try: return hash(obj)
-            except: return getHash(repr(obj))
+            try:
+                # print('Hash that')
+                return hash(obj)
+            except:
+                # print('Just Repr')
+                return getHash(repr(obj))
 
 class WrappedCanvas(Canvas):
     # Enforces MVC: no drawing outside calls to redrawAll
@@ -280,6 +294,7 @@ class App(object):
         app._logDrawingCalls = logDrawingCalls
         app._running = app._paused = False
         app._mousePressedOutsideWindow = False
+        app._keyDelay = 10
         if autorun: app.run()
 
     def __repr__(app):
@@ -494,6 +509,11 @@ class App(object):
 
     @_safeMethod
     def _keyPressedWrapper(app, event):
+        keyDelay = 10
+        def callKeyPressed():
+            app.keyPressed(event)
+            app._redrawAllWrapper()
+        
         event = App.KeyEventWrapper(event)
         if (event.key == 'control-s'):
             app.saveSnapshot()
@@ -508,16 +528,17 @@ class App(object):
               (not app._paused) and
               app._methodIsOverridden('keyPressed') and
               (not event.key == 'Modifier_Key')):
-            app.keyPressed(event)
-            app._redrawAllWrapper()
+            app._deferredMethodCall(afterId='keyPressed', afterDelay=app._keyDelay, afterFn= callKeyPressed)
 
     @_safeMethod
     def _keyReleasedWrapper(app, event):
         if (not app._running) or app._paused or (not app._methodIsOverridden('keyReleased')): return
         event = App.KeyEventWrapper(event)
         if (not event.key == 'Modifier_Key'):
-            app.keyReleased(event)
-            app._redrawAllWrapper()
+            def callKeyReleased():
+                app.keyPressed(event)
+                app._redrawAllWrapper()
+            app._deferredMethodCall(afterId='keyReleased', afterDelay=app._keyDelay, afterFn= callKeyReleased)
 
     @_safeMethod
     def _mousePressedWrapper(app, event):
@@ -620,6 +641,7 @@ class App(object):
 
     @_safeMethod
     def run(app):
+        app._key_buffer = []
         app._mouseIsPressed = False
         app._lastMousePosn = (-1, -1)
         app._lastWindowDims= None # set in sizeChangedWrapper
@@ -632,7 +654,7 @@ class App(object):
             App._theRoot.bind("<Button-1>", lambda event: App._theRoot.app._mousePressedWrapper(event))
             App._theRoot.bind("<B1-ButtonRelease>", lambda event: App._theRoot.app._mouseReleasedWrapper(event))
             App._theRoot.bind("<KeyPress>", lambda event: App._theRoot.app._keyPressedWrapper(event))
-            App._theRoot.bind("<KeyRelease>", lambda event: App._theRoot.app._keyReleasedWrapper(event))
+            App._theRoot.bind("<KeyRelease>", lambda event: app._theRoot.app._keyReleasedWrapper(event))
             App._theRoot.bind("<Configure>", lambda event: App._theRoot.app._sizeChangedWrapper(event))
         else:
             App._theRoot.canvas.destroy()

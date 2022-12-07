@@ -55,7 +55,7 @@ def death_timerFired(app):
 # app.win initialized in game
 def win_redrawAll(app, canvas):
     app.win.redraw(app, canvas)
-    
+
 def win_mousePressed(app, event):
     app.win.mousePressed(app, event)
 
