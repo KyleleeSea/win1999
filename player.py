@@ -11,7 +11,9 @@ class Player:
         self.mouseSensitivityDenominator = int(min(app.width, app.height)//550)
         self.maze = maze.maze
         self.exitBlock = maze.exitBlock
+
         self.angle = 90
+        
         self.angleVel = 10 #Test
         self.moveVel = app.cellWidth//15
         #Make player slower by increasing denominator of moveVel 

@@ -95,6 +95,8 @@ class Game:
         # app.sprites = [Sprite(self.otherSprites[3], 16, 1, 3, app) ]
 
         app.raycaster = Raycaster(app, app.maze)
+        # Setting angle to avoid player looking at wall to start (UX)
+        app.player.angle = app.raycaster.getPlayerStartAngle(app)
 
         # Player can be in same cell for up to 0.25 seconds before dying
         secondsToDie = 0.25
@@ -131,7 +133,6 @@ class Game:
 
 
     def timerFired(self, app):
-        print(app.enemy.xPos, app.enemy.lastX)
         # print(app.player.angle)
         self.gameFlow(app) 
         adjustBackgroundVolume(app)

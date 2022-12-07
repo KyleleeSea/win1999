@@ -276,7 +276,9 @@ class Enemy:
             cell2 = (self.row + yAdj*2, self.col + xAdj*2)
             # Check cells are open
             if (cell1[0] >= 0 and cell1[0] < len(self.maze.maze) and
-            cell2[0] >= 0 and cell2[0] < len(self.maze.maze)):
+            cell2[0] >= 0 and cell2[0] < len(self.maze.maze) and
+            cell1[1] >= 0 and cell1[1] < len(self.maze.maze) and
+            cell2[1] >= 0 and cell2[1] < len(self.maze.maze)):
                 if (self.maze.maze[cell1[0]][cell1[1]] == 0 and 
                 self.maze.maze[cell2[0]][cell2[1]] == 0):
                 # Check player at open cell 

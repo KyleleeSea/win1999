@@ -128,6 +128,16 @@ class Raycaster:
             distsWithColor.append(ray)
         return distsWithColor
 
+    def getPlayerStartAngle(self, app):
+        longestLen = 0
+        bestAngle = None
+        for angle in range(0, 361, 10):
+            testLen = self.getRay(app, angle)['dist']
+            if testLen > longestLen:
+                longestLen = testLen
+                bestAngle = angle
+        return bestAngle
+
     def getRay(self, app, angle):
         if angle > 90 and angle < 270:
             distHor = self.horizontalUpRay(app, angle)
