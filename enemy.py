@@ -11,6 +11,7 @@ from helpers import *
 from backgroundLogic import *
 from shortestPath import *
 from sprite import *
+import time
 
 class Enemy:
     def __init__(self, app, maze):
@@ -22,11 +23,11 @@ class Enemy:
         self.lastCol = 1
         self.xVel = 0
         self.yVel = 0
-        self.state = 'peekToPlayer'
+        self.state = 'wandering'
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
-        self.wanderSpeed = (app.player.moveVel)*1.5
+        self.wanderSpeed = (app.player.moveVel)*3
         self.huntSpeed = (app.player.moveVel)*1.5
         self.followSpeed = (app.player.moveVel)*0.75
         self.runAwaySpeed = (app.player.moveVel)*3
@@ -63,6 +64,10 @@ class Enemy:
 
         self.spriteVisual = Sprite(self.allAnim[0], 64, self.row, self.col,
         app)
+
+        self.stuckCounter = 0
+        self.timeWandering = 0
+        self.lastWanderTime = time.time()
 
 # Controller 
     def spawn(self, app, lowerBound, upperBound):
@@ -149,6 +154,8 @@ class Enemy:
             # Remove latest so enemy doesn't stay stationary
             # Check if at least two
             if len(self.movingBack) >= 2:
+                print('moving back')
+                print(self.movingBack)
                 self.movingBack.pop()
                 # Move back to last cell 
                 lastCell = self.movingBack[-1]
@@ -158,6 +165,7 @@ class Enemy:
                 # Remove so player keeps backtracking
             # Worst case scenario, go random cell
             else:
+                print('random')
                 random.shuffle(moves)
                 for move in moves:
                     newRow = self.row + move[0]
@@ -335,6 +343,17 @@ class Enemy:
             self.animationCounter = 0
         self.spriteVisual.image = self.allAnim[self.animationCounter]
 
+
+    def ensureNotStuck(self, app):
+        if (self.xPos == self.lastX and 
+        self.yPos == self.lastY):
+            self.stuckCounter += 1
+        
+        if self.stuckCounter > 50:
+            self.state = 'wandering'
+            self.stuckCounter = 0
+            self.wander(app)
+
     def movementUpdates(self, app):
         # Freeze as soon as enter row and col of player
         # Unless going to peek or stare away cell
@@ -347,9 +366,9 @@ class Enemy:
 
             if (self.xPos > xDiffPos or self.xPos < xDiffNeg or 
             self.yPos > yDiffPos or self.yPos < yDiffNeg):
-                self.changeState(app)
                 self.lastX = self.xPos
                 self.lastY = self.yPos
+                self.changeState(app)
             
             self.move()
             self.updateRowCol(app)
@@ -367,7 +386,16 @@ class Enemy:
                 self.colTo = goTo[3]
                 self.runAway(app)
 
+        if self.state == 'wandering' and self.timeWandering > 45:
+            self.state = 'following'
+            self.timeWandering = 0
+        
+        if time.time() > self.lastWanderTime+1:
+            self.lastWanderTime = time.time()
+            self.timeWandering += 1
+
     def timerFired(self, app):
+        self.ensureNotStuck(app)
         self.animationUpdates(app)
         self.movementUpdates(app)
 

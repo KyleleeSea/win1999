@@ -68,7 +68,7 @@ class Game:
         app.wallHeight = (1/3)*app.height
         app.distToPlane = (app.width/2)*math.tan(math.radians(30))
 
-        app.maze = Maze(15) #prev 15 # end game like size 25?
+        app.maze = Maze(25)
         app.level = 1
         exitBlockProportion = 0.6
         app.exitBlock = exitBlock(app.maze.maze, exitBlockProportion, app)
@@ -115,6 +115,7 @@ class Game:
         app.intervalsPerSecond = 1000//app.timerDelay
         app.currentSecondInterval = 1
 
+
 # Game Logic
     def gameFlow(self, app):
         if time.time() > app.lastTime + 1:
@@ -128,7 +129,9 @@ class Game:
             app.legalInformationSound.start(0)
             self.playingLegalSound = True
 
+
     def timerFired(self, app):
+        print(app.enemy.xPos, app.enemy.lastX)
         # print(app.player.angle)
         self.gameFlow(app) 
         adjustBackgroundVolume(app)
@@ -136,10 +139,10 @@ class Game:
         if app.secondCounter >= 120 and app.exitOpen != True:
             app.exitOpen = True
             app.sprites.append(app.exitBlock.spriteRepresentation)
-        if app.secondCounter > 120:
-             checkCollision(app)
-        if app.secondCounter > 25:
-            app.enemy.timerFired(app)
+        # if app.secondCounter > 120:
+        #      checkCollision(app)
+        # if app.secondCounter > 25:
+        app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
 
     def keyPressed(self, app, event):
