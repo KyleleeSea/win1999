@@ -90,6 +90,8 @@ class Game:
         app.legalInformationSound = Sound('./assets/introVoice2.mp3')
         app.doorSound = Sound('./assets/introVoice3.mp3')
 
+        app.warningSymbol = app.loadImage('./assets/warningSign.png')
+
         #Init sprites
         app.sprites = self.initSprites(app)
         # app.sprites = [Sprite(self.otherSprites[3], 16, 1, 3, app) ]
@@ -98,8 +100,8 @@ class Game:
         # Setting angle to avoid player looking at wall to start (UX)
         app.player.angle = app.raycaster.getPlayerStartAngle(app)
 
-        # Player can be in same cell for up to 0.25 seconds before dying
-        secondsToDie = 0.25
+        # Player can be in same cell for up to 1 seconds before dying
+        secondsToDie = 1
         mstoDie = secondsToDie*1000
         app.dieIntervals = mstoDie//app.timerDelay
         app.collisionCounter = 0
@@ -131,6 +133,11 @@ class Game:
             app.legalInformationSound.start(0)
             self.playingLegalSound = True
 
+    def warningLight(self, app, canvas):
+        if (getDistance(app.player.row, app.player.col, app.enemy.row, 
+        app.enemy.col) < 3 and app.secondCounter % 2 == 0):
+            canvas.create_image(app.width-75, 
+            75, image=ImageTk.PhotoImage(app.warningSymbol))
 
     def timerFired(self, app):
         # print(app.player.angle)
@@ -140,10 +147,10 @@ class Game:
         if app.secondCounter >= 120 and app.exitOpen != True:
             app.exitOpen = True
             app.sprites.append(app.exitBlock.spriteRepresentation)
-        # if app.secondCounter > 120:
-        #      checkCollision(app)
-        # if app.secondCounter > 25:
-        app.enemy.timerFired(app)
+        if app.secondCounter > 120:
+             checkCollision(app)
+        if app.secondCounter > 25:
+            app.enemy.timerFired(app)
         app.playerShadow.timerFired(app)
 
     def keyPressed(self, app, event):
@@ -168,6 +175,7 @@ class Game:
         
         app.raycaster.redraw(app, canvas)
         self.drawStartText(app, canvas)
+        self.warningLight(app, canvas)
 
         # Commented out 2d representation debugging code
         if app.displayMap:

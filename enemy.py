@@ -23,7 +23,7 @@ class Enemy:
         self.lastCol = 1
         self.xVel = 0
         self.yVel = 0
-        self.state = 'wandering'
+        self.state = 'peekToPlayer'
         self.visited = set()
         self.movingBack = []
         # Adjust speeds. 
@@ -154,8 +154,6 @@ class Enemy:
             # Remove latest so enemy doesn't stay stationary
             # Check if at least two
             if len(self.movingBack) >= 2:
-                print('moving back')
-                print(self.movingBack)
                 self.movingBack.pop()
                 # Move back to last cell 
                 lastCell = self.movingBack[-1]
@@ -165,7 +163,6 @@ class Enemy:
                 # Remove so player keeps backtracking
             # Worst case scenario, go random cell
             else:
-                print('random')
                 random.shuffle(moves)
                 for move in moves:
                     newRow = self.row + move[0]

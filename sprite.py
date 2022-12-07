@@ -67,12 +67,8 @@ class Sprite:
         (x, y) = self.getSpriteCoords(app)
         sprite3DSize = self.getSpriteDims(app)/self.baseSize
         # print(sprite3DSize)
-        if sprite3DSize < 45 or self.path != './assets/exitSprite.png': 
+        if sprite3DSize < 45 or self.path == './assets/exitSprite.png': 
             # try lower #s later 
-            image3D = app.scaleImage(self.image, sprite3DSize)
-            canvas.create_image(x, 
-            y, image=ImageTk.PhotoImage(image3D))
-        elif self.path == './assets/exitSprite.png':
             image3D = app.scaleImage(self.image, sprite3DSize)
             canvas.create_image(x, 
             y, image=ImageTk.PhotoImage(image3D))
