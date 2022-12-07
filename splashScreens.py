@@ -65,7 +65,6 @@ class Win:
     def redraw(self, app, canvas):
             canvas.create_image(app.width//2, app.height//2, 
             image=ImageTk.PhotoImage(self.winImage))
-        
-    def keyPressed(self, app, event):
-        if event.key == 's':
-            app.mode = 'start'
+
+    def mousePressed(self, app, event):
+        app.mode = 'start'
