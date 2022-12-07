@@ -45,7 +45,6 @@ class Raycaster:
                 spriteDict = {'dist': dist, 'type': 'sprite', 'obj': sprite}
                 spriteList.append(spriteDict)
             
-        # print(spriteList[0]['obj'].getSpriteCoords(app))
         return spriteList
 
     def drawScene(self, app, canvas):

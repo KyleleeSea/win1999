@@ -41,12 +41,10 @@ class Sprite:
         if ((app.player.angle >= 270 and app.player.angle <= 360) and
         (p >= 0 and p <= 90)):
             q -= 360
-        # print(f'hX {hX} hY {hY} p {p} q {q}')
 
         # APP.WIDTH - SOLVES DIRECTION ERROR
         returnX = app.width - (q * (app.width / fov))
         returnY = app.height / 2
-        # print(returnX)
         return (returnX, returnY)
 
     def getSpriteDims(self, app):

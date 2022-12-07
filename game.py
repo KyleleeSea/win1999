@@ -100,12 +100,11 @@ class Game:
         # Setting angle to avoid player looking at wall to start (UX)
         app.player.angle = app.raycaster.getPlayerStartAngle(app)
 
-        # Player can be in same cell for up to 1 seconds before dying
-        secondsToDie = 1
+        # Player can be in same cell for up to 0.5 seconds before dying
+        secondsToDie = 0.5
         mstoDie = secondsToDie*1000
         app.dieIntervals = mstoDie//app.timerDelay
         app.collisionCounter = 0
-        app.collisionImage = app.loadImage('./assets/bonziLooking.png')
         app.death = Death(app)
 
         app.win = Win(app)
